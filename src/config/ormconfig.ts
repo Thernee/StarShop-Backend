@@ -8,9 +8,10 @@ const AppDataSource = new DataSource({
   url: process.env.DATABASE_URL,
   entities: [__dirname + '/../entities/*.ts'],
   migrations: [__dirname + '/../migrations/*.ts'],
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  // ssl: {
+  //   rejectUnauthorized: false,
+  // },
+  ssl: false,
   synchronize: false, // Set to true only in development; false in production
 });
 
