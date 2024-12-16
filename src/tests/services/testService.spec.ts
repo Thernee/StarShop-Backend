@@ -10,7 +10,6 @@ describe("TestService", () => {
     await setupTestDB();
     service = new TestService(testDataSource);
 
-    // Pre-popular datos para las pruebas
     const repo = testDataSource.getRepository(TestEntity);
     await repo.save({ name: "Existing Entity" });
   });
