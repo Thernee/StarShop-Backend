@@ -29,7 +29,11 @@ The backend project follows a clear and modular folder structure:
 ### 📏 3️⃣ Coding Standards  
 * **Language:** TypeScript is the default language.  
 * **Linting:** Use ESLint for code quality.  
-* **Formatting:** Use Prettier for consistent formatting.  
+* **Formatting:** Use Prettier for consistent formatting.
+* **Naming Conventions:**  
+   - Use **camelCase** for variables and functions.  
+   - Use **PascalCase** for classes, interfaces, and types.  
+   - Use **UPPER_SNAKE_CASE** for constants.  
 
 To ensure adherence, run the following commands before committing:  
 - `npm run lint` - Check for linting issues.  
