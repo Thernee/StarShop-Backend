@@ -6,7 +6,7 @@ export class AttributeValue {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Attribute, { eager: true })
+  @ManyToOne(() => Attribute)
   attribute: Attribute;
 
   @Column()

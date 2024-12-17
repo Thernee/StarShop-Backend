@@ -1,33 +1,46 @@
+import { Repository } from "typeorm";
+import { Attribute } from "../entities/Attribute";
+import AppDataSource from "../config/ormconfig";
 
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Attribute } from '../entities/Attribute';
-
-@Injectable()
 export class AttributeService {
-  constructor(
-    @InjectRepository(Attribute)
-    private attributeRepository: Repository<Attribute>,
-  ) {}
+    private repository: Repository<Attribute>;
 
-  create(attribute: Partial<Attribute>) {
-    return this.attributeRepository.save(attribute);
-  }
+    constructor() {
+        this.repository = AppDataSource.getRepository(Attribute);
+    }
 
-  findAll() {
-    return this.attributeRepository.find();
-  }
+    //create new attribute
+    async create(data: Partial<Attribute>): Promise<Attribute | null> {
+        const attribute = this.repository.create(data);
+        return await this.repository.save(attribute);
+    }
 
-  findOne(id: number) {
-    return this.attributeRepository.findOne({ where: { id } });
-  }
 
-  update(id: number, updatedData: Partial<Attribute>) {
-    return this.attributeRepository.update(id, updatedData);
-  }
+    //get all attributes
+    async getAll(): Promise<Attribute[]> {
+        return await this.repository.find();
+    }
 
-  delete(id: number) {
-    return this.attributeRepository.delete(id);
-  }
+
+    //get attribute by id
+    async getById(id: number): Promise<Attribute | null> {
+        return await this.repository.findOne({ where: { id } });
+    }
+
+
+    //update attribute
+    async update(id: number, data: Partial<Attribute>): Promise<Attribute | null> {
+        const attribute = await this.getById(id);
+        if (!attribute) return null;
+
+        Object.assign(attribute, data);
+        return await this.repository.save(attribute);
+    }
+
+
+    //delete attribute
+    async delete(id: number): Promise<boolean> {
+        const result = await this.repository.delete(id);
+        return result.affected === 1;
+    }
 }
