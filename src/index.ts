@@ -1,11 +1,14 @@
 import 'reflect-metadata';
 import express from 'express';
 import AppDataSource from './config/ormconfig';
+import userRoutes from './routes/UserRoutes';
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use('/users', userRoutes);
 
 AppDataSource.initialize()
   .then(() => {
@@ -21,3 +24,6 @@ AppDataSource.initialize()
 app.get('/', (req, res) => {
   res.send('Hello, world!');
 });
+
+
+export default app; // Export the app for testing
