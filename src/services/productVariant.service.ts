@@ -1,32 +1,43 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ProductVariantAttribute } from '../entities/ProductVariantAttribute';
+import { ProductVariant } from '../entities/ProductVariant';
+import { Product } from '../entities/Product';
+import AppDataSource from '../config/ormconfig';
 
-@Injectable()
-export class ProductVariantAttributeService {
-  constructor(
-    @InjectRepository(ProductVariantAttribute)
-    private productVariantAttributeRepository: Repository<ProductVariantAttribute>,
-  ) {}
+export class ProductVariantService {
+  private repository: Repository<ProductVariant>;
 
-  create(data: Partial<ProductVariantAttribute>) {
-    return this.productVariantAttributeRepository.save(data);
+  constructor() {
+    this.repository = AppDataSource.getRepository(ProductVariant);
   }
 
-  findAll() {
-    return this.productVariantAttributeRepository.find();
+  async create(data: Partial<ProductVariant>, productId: number): Promise<ProductVariant | null> {
+    const productRepo = AppDataSource.getRepository(Product);
+    const product = await productRepo.findOne({ where: { id: productId } });
+
+    if (!product) return null;
+
+    const productVariant = this.repository.create({ ...data, product });
+    return await this.repository.save(productVariant);
   }
 
-  findOne(id: number) {
-    return this.productVariantAttributeRepository.findOne({ where: { id } });
+  async getAll(): Promise<ProductVariant[]> {
+    return await this.repository.find({ relations: ['product'] });
   }
 
-  update(id: number, updatedData: Partial<ProductVariantAttribute>) {
-    return this.productVariantAttributeRepository.update(id, updatedData);
+  async getById(id: number): Promise<ProductVariant | null> {
+    return await this.repository.findOne({ where: { id }, relations: ['product'] });
   }
 
-  delete(id: number) {
-    return this.productVariantAttributeRepository.delete(id);
+  async update(id: number, data: Partial<ProductVariant>): Promise<ProductVariant | null> {
+    const variant = await this.getById(id);
+    if (!variant) return null;
+
+    Object.assign(variant, data);
+    return await this.repository.save(variant);
+  }
+
+  async delete(id: number): Promise<boolean> {
+    const result = await this.repository.delete(id);
+    return result.affected === 1;
   }
 }
