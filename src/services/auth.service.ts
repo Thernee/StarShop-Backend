@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
-import { AppDataSource } from '../config/data-source';
+import AppDataSource  from '../config/ormconfig';
 import { User } from '../entities/User';
-import { UnauthorizedError } from '../utils/errors';
+//import { UnauthorizedError } from '../utils/errors';
 
 export class AuthService {
     private static readonly JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
@@ -10,16 +10,13 @@ export class AuthService {
     static async authenticateUser(walletAddress: string): Promise<string> {
         const userRepository = AppDataSource.getRepository(User);
         
-        // Find or create user
         let user = await userRepository.findOne({ where: { walletAddress } });
         
         if (!user) {
-            // Create new user if doesn't exist
             user = userRepository.create({ walletAddress });
             await userRepository.save(user);
         }
 
-        // Generate JWT token
         const token = jwt.sign(
             { 
                 userId: user.id,
@@ -37,7 +34,7 @@ export class AuthService {
         try {
             return jwt.verify(token, this.JWT_SECRET);
         } catch (error) {
-            throw new UnauthorizedError('Invalid token');
+            throw new ReferenceError('Invalid token');
         }
     }
 }

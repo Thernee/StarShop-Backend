@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/auth.service';
-import { UnauthorizedError } from '../utils/errors';
+//import { UnauthorizedError } from '../utils/errors';
 
 export interface AuthenticatedRequest extends Request {
     user?: {
@@ -19,7 +19,7 @@ export const authMiddleware = async (
         const authHeader = req.headers.authorization;
         
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            throw new UnauthorizedError('No token provided');
+            throw new ReferenceError('No token provided');
         }
 
         const token = authHeader.split(' ')[1];
@@ -37,11 +37,10 @@ export const authMiddleware = async (
     }
 };
 
-// Optional: Role-based authentication middleware
 export const requireRole = (role: string) => {
     return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         if (!req.user || req.user.role !== role) {
-            throw new UnauthorizedError('Insufficient permissions');
+            throw new ReferenceError('Insufficient permissions');
         }
         next();
     };
