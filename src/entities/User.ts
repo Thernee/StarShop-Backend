@@ -1,19 +1,34 @@
+// user.entity.ts - User Database Model
+
+// Import decorators from TypeORM to define database structure
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
-@Entity()
+/**
+* User Entity
+* Represents the structure of the User table in the database
+* Uses TypeORM decorators to define table columns and properties
+*/
+@Entity()  // Marks this class as a database table
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
+   // Primary key - Auto-incrementing ID number
+   @PrimaryGeneratedColumn()
+   id: number;
 
-    @Column({ unique: true })
-    walletAddress: string;
+   // User's blockchain wallet address
+   // unique: true means no two users can have the same address
+   @Column({ unique: true })
+   walletAddress: string;
 
-    @Column({ default: 'user' })
-    role: string;
+   // User's role in the system 
+   // default: 'user' means new users automatically get this role
+   @Column({ default: 'user' })
+   role: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+   // Automatically tracks when the user record was created
+   @CreateDateColumn()
+   createdAt: Date;
 
-    @UpdateDateColumn()
-    updatedAt: Date;
+   // Automatically updates whenever the user record is modified
+   @UpdateDateColumn()
+   updatedAt: Date;
 }
