@@ -42,6 +42,7 @@ export const authMiddleware = async (
        // Verify the token and decode its contents
        const decoded = AuthService.verifyToken(token);
        
+       
        // Add user information to the request object
        req.user = {
            userId: decoded.userId,

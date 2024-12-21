@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import express from 'express';
 import AppDataSource from './config/ormconfig';
+import router from './route/protected.routes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,3 +22,6 @@ AppDataSource.initialize()
 app.get('/', (req, res) => {
   res.send('Hello, world!');
 });
+
+
+app.use('/api', router)

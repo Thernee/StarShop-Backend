@@ -13,7 +13,7 @@ const router = Router();
 * This route is protected and requires a valid authentication token
 * Any authenticated user can access this route
 */
-router.get('/', authMiddleware, (req, res) => {
+router.get('/login', authMiddleware, (req, res) => {
    res.json({ message: 'Protected route accessed' });
 });
 
