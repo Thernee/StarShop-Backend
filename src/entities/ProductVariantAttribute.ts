@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn } from 'typeorm';
 import { ProductVariant } from './ProductVariant';
-import { AttributeValue } from './attributeValue';
+import { AttributeValue } from './AttributeValue';
 
 @Entity('product_variant_attributes')
 export class ProductVariantAttribute {

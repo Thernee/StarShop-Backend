@@ -4,39 +4,56 @@ import dotenv from "dotenv";
 dotenv.config();
 
 beforeAll(async () => {
-  console.log("Initializing database...");
+  console.log(`[${new Date().toISOString()}] Initializing database...`);
   if (!AppDataSource.isInitialized) {
-    await AppDataSource.initialize();
+    try {
+      await AppDataSource.initialize();
+      console.log(`[${new Date().toISOString()}] Database initialized.`);
+    } catch (error) {
+      console.error(`[${new Date().toISOString()}] Error during database initialization:`, error);
+      throw error;
+    }
   }
-  console.log("Database initialized.");
 
   if (process.env.NODE_ENV === "test") {
-    console.log("Synchronizing database...");
+    console.log(`[${new Date().toISOString()}] Synchronizing database...`);
     try {
-      await AppDataSource.synchronize();
-      console.log("Database synchronized.");
+      await AppDataSource.synchronize(true); // Drop and recreate the schema
+      console.log(`[${new Date().toISOString()}] Database synchronized.`);
     } catch (error) {
-      console.error("Error during database synchronization:", error);
-      throw error; 
+      console.error(`[${new Date().toISOString()}] Error during database synchronization:`, error);
+      throw error;
     }
   }
 });
 
-
 afterEach(async () => {
-  console.log("Clearing database...");
+  console.log(`[${new Date().toISOString()}] Clearing database...`);
   const entities = AppDataSource.entityMetadatas;
-  for (const entity of entities) {
-    const repository = AppDataSource.getRepository(entity.name);
-    await repository.query(`DELETE FROM ${entity.tableName};`);
+  try {
+    await AppDataSource.transaction(async (manager) => {
+      for (const entity of entities) {
+        await manager.query(`PRAGMA foreign_keys = OFF;`); // SQLite-specific, use equivalent for other DBs
+        await manager.query(`DELETE FROM ${entity.tableName};`);
+        await manager.query(`PRAGMA foreign_keys = ON;`);
+      }
+    });
+    console.log(`[${new Date().toISOString()}] Database cleared.`);
+  } catch (error) {
+    console.error(`[${new Date().toISOString()}] Error clearing database:`, error);
+    throw error;
   }
-  console.log("Database cleared.");
 });
 
 afterAll(async () => {
-  console.log("Destroying database...");
+  console.log(`[${new Date().toISOString()}] Destroying database...`);
   if (AppDataSource.isInitialized) {
-    await AppDataSource.destroy();
+    try {
+      await AppDataSource.destroy();
+      console.log(`[${new Date().toISOString()}] Database destroyed.`);
+    } catch (error) {
+      console.error(`[${new Date().toISOString()}] Error during database destruction:`, error);
+      throw error;
+    }
   }
-  console.log("Database destroyed.");
 });
