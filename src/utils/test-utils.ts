@@ -1,13 +1,22 @@
-import { testDataSource } from "../config/ormconfig.test";
+import AppDataSource from "../config/ormconfig";
 
-export const setupTestDB = async () => {
-  if (!testDataSource.isInitialized) {
-    await testDataSource.initialize();
+export async function setupTestDB() {
+  console.log("process.env.NODE_ENV")
+  console.log("Initializing database...");
+  if (!AppDataSource.isInitialized) {
+    await AppDataSource.initialize();
+    console.log("Database initialized.");
   }
-};
 
-export const teardownTestDB = async () => {
-  if (testDataSource.isInitialized) {
-    await testDataSource.destroy();
+  console.log("Synchronizing database...");
+  await AppDataSource.synchronize(true);
+  console.log("Database synchronized.");
+}
+
+export async function teardownTestDB() {
+  console.log("Destroying database...");
+  if (AppDataSource.isInitialized) {
+    await AppDataSource.destroy();
+    console.log("Database destroyed.");
   }
-};
+}
