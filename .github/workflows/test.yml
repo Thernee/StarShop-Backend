@@ -21,10 +21,16 @@ jobs:
         with:
           node-version: 16
 
+      - name: Check SQLite Version
+        run: sqlite3 --version
+
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run Tests
+      - name: Print Environment Variables
+        run: env
+
+      - name: Run Tests with Logs
         env:
           NODE_ENV: test
-        run: npm test
+        run: NODE_OPTIONS=--trace-warnings jest --verbose --runInBand
