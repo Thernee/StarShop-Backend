@@ -1,12 +1,12 @@
 import { Repository } from "typeorm";
 import { TestEntity } from "../entities/testEntity";
-import { DataSource } from "typeorm";
+import AppDataSource from "../config/ormconfig";
 
 export class TestService {
   private repo: Repository<TestEntity>;
 
-  constructor(dataSource: DataSource) {
-    this.repo = dataSource.getRepository(TestEntity);
+  constructor() {
+    this.repo = AppDataSource.getRepository(TestEntity);
   }
 
   async getEntityByName(name: string): Promise<TestEntity | null> {
