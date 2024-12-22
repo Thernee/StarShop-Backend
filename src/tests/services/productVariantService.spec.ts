@@ -1,7 +1,7 @@
 import { ProductVariantService } from '../../services/productVariant.service';
 import { ProductVariant } from '../../entities/ProductVariant';
 import { Repository } from 'typeorm';
-import testDataSource from '../../config/ormconfig.test';
+import AppDataSource from '../../config/ormconfig';
 import { ProductType } from '../../entities/ProductType';
 import { Product } from '../../entities/Product';
 
@@ -28,7 +28,7 @@ describe('ProductVariantService', () => {
             } as any,
         } as unknown as jest.Mocked<Repository<ProductVariant>>;
 
-        (testDataSource.getRepository as jest.Mock).mockReturnValue(mockRepo);
+        (AppDataSource.getRepository as jest.Mock).mockReturnValue(mockRepo);
 
         service = new ProductVariantService();
         (service as any).repository = mockRepo;
@@ -42,7 +42,7 @@ describe('ProductVariantService', () => {
         const savedVariant = { id: 1, ...variantData, product: productData, createdAt: new Date() };
 
         const productRepo = { findOne: jest.fn().mockResolvedValue(productData) };
-        (testDataSource.getRepository as jest.Mock)
+        (AppDataSource.getRepository as jest.Mock)
             .mockReturnValueOnce(productRepo)
             .mockReturnValueOnce(mockRepo);
 

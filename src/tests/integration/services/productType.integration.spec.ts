@@ -1,4 +1,4 @@
-import testDataSource from "../../../config/ormconfig.test";
+import AppDataSource from "../../../config/ormconfig";
 import { ProductVariant } from "../../../entities/ProductVariant";
 import { Product } from "../../../entities/Product";
 import { ProductVariantService } from "../../../services/productVariant.service";
@@ -7,30 +7,30 @@ describe("ProductVariantService Integration Tests", () => {
   let service: ProductVariantService;
 
   beforeAll(async () => {
-    if (!testDataSource.isInitialized) {
-      await testDataSource.initialize();
+    if (!AppDataSource.isInitialized) {
+      await AppDataSource.initialize();
     }
-    await testDataSource.synchronize(true);
+    await AppDataSource.synchronize(true);
 
     service = new ProductVariantService();
   });
 
   afterEach(async () => {
-    const entities = testDataSource.entityMetadatas;
+    const entities = AppDataSource.entityMetadatas;
     for (const entity of entities) {
-      const repository = testDataSource.getRepository(entity.name);
+      const repository = AppDataSource.getRepository(entity.name);
       await repository.clear();
     }
   });
 
   afterAll(async () => {
-    if (testDataSource.isInitialized) {
-      await testDataSource.destroy();
+    if (AppDataSource.isInitialized) {
+      await AppDataSource.destroy();
     }
   });
 
   it("should create a ProductVariant with Product", async () => {
-    const productRepo = testDataSource.getRepository(Product);
+    const productRepo = AppDataSource.getRepository(Product);
 
     const product = productRepo.create({
       name: "Laptop",
@@ -53,11 +53,11 @@ describe("ProductVariantService Integration Tests", () => {
   });
 
   it("should fetch all ProductVariants with their Products", async () => {
-    const productRepo = testDataSource.getRepository(Product);
+    const productRepo = AppDataSource.getRepository(Product);
     const product = productRepo.create({ name: "Laptop" });
     const savedProduct = await productRepo.save(product);
 
-    const variantRepo = testDataSource.getRepository(ProductVariant);
+    const variantRepo = AppDataSource.getRepository(ProductVariant);
     const variant1 = variantRepo.create({ sku: "LAP123", price: 999.99, stock: 10, product: savedProduct });
     const variant2 = variantRepo.create({ sku: "LAP456", price: 899.99, stock: 5, product: savedProduct });
 
@@ -76,11 +76,11 @@ describe("ProductVariantService Integration Tests", () => {
   });
 
   it("should delete a ProductVariant", async () => {
-    const productRepo = testDataSource.getRepository(Product);
+    const productRepo = AppDataSource.getRepository(Product);
     const product = productRepo.create({ name: "Laptop" });
     const savedProduct = await productRepo.save(product);
 
-    const variantRepo = testDataSource.getRepository(ProductVariant);
+    const variantRepo = AppDataSource.getRepository(ProductVariant);
     const variant = variantRepo.create({ sku: "LAP123", price: 999.99, stock: 10, product: savedProduct });
     const savedVariant = await variantRepo.save(variant);
 

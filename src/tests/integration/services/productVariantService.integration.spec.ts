@@ -1,4 +1,4 @@
-import testDataSource from "../../../config/ormconfig.test";
+import AppDataSource from "../../../config/ormconfig";
 import { Product } from "../../../entities/Product";
 import { ProductType } from "../../../entities/ProductType";
 import { ProductVariant } from "../../../entities/ProductVariant";
@@ -8,31 +8,31 @@ describe("ProductVariantService Integration Tests", () => {
   let service: ProductVariantService;
 
   beforeAll(async () => {
-    if (!testDataSource.isInitialized) {
-      await testDataSource.initialize();
+    if (!AppDataSource.isInitialized) {
+      await AppDataSource.initialize();
     }
-    await testDataSource.synchronize(true);
+    await AppDataSource.synchronize(true);
 
     service = new ProductVariantService();
   });
 
   afterAll(async () => {
-    if (testDataSource.isInitialized) {
-      await testDataSource.destroy();
+    if (AppDataSource.isInitialized) {
+      await AppDataSource.destroy();
     }
   });
 
   afterEach(async () => {
-    const entities = testDataSource.entityMetadatas;
+    const entities = AppDataSource.entityMetadatas;
     for (const entity of entities) {
-      const repository = testDataSource.getRepository(entity.name);
+      const repository = AppDataSource.getRepository(entity.name);
       await repository.clear();
     }
   });
   
   it("should create a Product with a ProductType", async () => {
-    const productTypeRepo = testDataSource.getRepository(ProductType);
-    const productRepo = testDataSource.getRepository(Product);
+    const productTypeRepo = AppDataSource.getRepository(ProductType);
+    const productRepo = AppDataSource.getRepository(Product);
   
     const productType = await productTypeRepo.save({ name: "Electronics", description: "..." });
     expect(productType.id).toBeDefined();
@@ -44,8 +44,8 @@ describe("ProductVariantService Integration Tests", () => {
   
 
   it("should create a ProductVariant with Product", async () => {
-    const productTypeRepo = testDataSource.getRepository(ProductType);
-    const productRepo = testDataSource.getRepository(Product);
+    const productTypeRepo = AppDataSource.getRepository(ProductType);
+    const productRepo = AppDataSource.getRepository(Product);
 
     const productType = productTypeRepo.create({
       name: "Electronics",
@@ -80,8 +80,8 @@ describe("ProductVariantService Integration Tests", () => {
     );
   });
   it("should fetch ProductVariants associated with a Product", async () => {
-    const productRepo = testDataSource.getRepository(Product);
-    const variantRepo = testDataSource.getRepository(ProductVariant);
+    const productRepo = AppDataSource.getRepository(Product);
+    const variantRepo = AppDataSource.getRepository(ProductVariant);
   
     const product = productRepo.create({ name: "Laptop" });
     const savedProduct = await productRepo.save(product);

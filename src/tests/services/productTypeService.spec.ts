@@ -1,7 +1,7 @@
 import { ProductTypeService } from '../../services/productType.service';
 import { ProductType } from '../../entities/ProductType';
 import { Repository } from 'typeorm';
-import testDataSource from '../../config/ormconfig.test';
+import AppDataSource from '../../config/ormconfig';
 
 jest.mock('../../config/ormconfig', () => ({
     getRepository: jest.fn(),
@@ -21,7 +21,7 @@ jest.mock('../../config/ormconfig', () => ({
         create: jest.fn(),
       } as unknown as jest.Mocked<Repository<ProductType>>;
   
-      (testDataSource.getRepository as jest.Mock).mockReturnValue(mockRepo);
+      (AppDataSource.getRepository as jest.Mock).mockReturnValue(mockRepo);
   
       service = new ProductTypeService();
     });
