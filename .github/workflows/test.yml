@@ -24,5 +24,14 @@ jobs:
     - name: Install Dependencies
       run: npm install
 
+    - name: Set Environment Variables
+      run: echo "NODE_ENV=test" >> $GITHUB_ENV
+
     - name: Run Tests
       run: npm test
+
+    - name: Debug on Failure
+      if: failure()
+      run: |
+        echo "Tests failed. Debugging logs:"
+        cat test-results.log || echo "No logs found"
