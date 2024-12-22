@@ -7,10 +7,12 @@ import { ProductVariant } from '../entities/ProductVariant';
 import { Attribute } from '../entities/Attribute';
 import { AttributeValue } from '../entities/AttributeValue';
 
-export const testDataSource = new DataSource({
-  type: 'sqlite', 
+const testDataSource = new DataSource({
+  type: 'sqlite',
   database: ':memory:', 
-  synchronize: true, 
-  logging: true,
+  synchronize: true,    
   entities: [TestEntity, User, Product, ProductType, ProductVariant, Attribute, AttributeValue],
+  logging: false,       
 });
+
+export default testDataSource;

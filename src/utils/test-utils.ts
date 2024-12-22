@@ -1,4 +1,4 @@
-import { testDataSource } from "../config/ormconfig.test";
+import testDataSource from "../config/ormconfig.test";
 
 export const setupTestDB = async () => {
   if (!testDataSource.isInitialized) {
