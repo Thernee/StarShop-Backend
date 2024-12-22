@@ -1,5 +1,5 @@
 import { setupTestDB, teardownTestDB } from "../../utils/test-utils";
-import testDataSource from "../../config/ormconfig.test";
+import AppDataSource from "../../config/ormconfig";
 import { UserService } from "../../services/User.service";
 import { User } from "../../entities/User";
 
@@ -9,9 +9,9 @@ describe("UserService", () => {
 
   beforeAll(async () => {
     await setupTestDB();
-    service = new UserService(testDataSource);
+    service = new UserService(AppDataSource);
 
-    const userRepo = testDataSource.getRepository(User);
+    const userRepo = AppDataSource.getRepository(User);
     await userRepo.save({
       name: "Existing User",
       email: "existing@example.com",
@@ -52,7 +52,7 @@ describe("UserService", () => {
   });
 
   it("should retrieve an existing user by ID", async () => {
-    const userRepo = testDataSource.getRepository(User);
+    const userRepo = AppDataSource.getRepository(User);
     const user = await userRepo.findOne({ where: { email: "existing@example.com" } });
 
     const fetchedUser = await service.getUserById(user?.id || 0);
@@ -66,7 +66,7 @@ describe("UserService", () => {
   });
 
   it("should update a user's information", async () => {
-    const userRepo = testDataSource.getRepository(User);
+    const userRepo = AppDataSource.getRepository(User);
     const user = await userRepo.findOne({ where: { email: "existing@example.com" } });
 
     const updatedUser = await service.updateUser(user?.id || 0, { name: "Updated User" });
@@ -75,7 +75,7 @@ describe("UserService", () => {
   });
 
   it("should delete a user", async () => {
-    const userRepo = testDataSource.getRepository(User);
+    const userRepo = AppDataSource.getRepository(User);
     const user = await userRepo.findOne({ where: { email: "existing@example.com" } });
 
     const success = await service.deleteUser(user?.id || 0);

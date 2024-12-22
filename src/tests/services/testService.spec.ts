@@ -1,5 +1,5 @@
 import { setupTestDB, teardownTestDB } from "../../utils/test-utils";
-import testDataSource from "../../config/ormconfig.test";
+import AppDataSource from "../../config/ormconfig";
 import { TestService } from "../../services/test.service";
 import { TestEntity } from "../../entities/testEntity";
 
@@ -8,9 +8,9 @@ describe("TestService", () => {
 
   beforeAll(async () => {
     await setupTestDB();
-    service = new TestService(testDataSource);
+    service = new TestService(AppDataSource);
 
-    const repo = testDataSource.getRepository(TestEntity);
+    const repo = AppDataSource.getRepository(TestEntity);
     await repo.save({ name: "Existing Entity" });
   });
 
