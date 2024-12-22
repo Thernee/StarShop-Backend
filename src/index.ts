@@ -25,3 +25,6 @@ app.get('/', (req, res) => {
 
 
 app.use('/api', router)
+
+console.log('JWT_SECRET:', process.env.JWT_SECRET); // Debug log (remove in production)
+

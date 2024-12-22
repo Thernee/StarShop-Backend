@@ -29,7 +29,7 @@ export const authMiddleware = async (
    try {
        // Get the authorization header
        const authHeader = req.headers.authorization;
-       
+
        // Check if authorization header exists and has correct format
        if (!authHeader || !authHeader.startsWith('Bearer ')) {
            throw new ReferenceError('No token provided');
@@ -38,11 +38,11 @@ export const authMiddleware = async (
        // Extract the token from the header
        // Format: "Bearer <token>"
        const token = authHeader.split(' ')[1];
-       
+
        // Verify the token and decode its contents
        const decoded = AuthService.verifyToken(token);
-       
-       
+
+
        // Add user information to the request object
        req.user = {
            userId: decoded.userId,
