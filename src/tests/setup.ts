@@ -12,8 +12,13 @@ beforeAll(async () => {
 
   if (process.env.NODE_ENV === "test") {
     console.log("Synchronizing database...");
-    await AppDataSource.synchronize(true);
-    console.log("Database synchronized.");
+    try {
+      await AppDataSource.synchronize();
+      console.log("Database synchronized.");
+    } catch (error) {
+      console.error("Error during database synchronization:", error);
+      throw error; 
+    }
   }
 });
 
