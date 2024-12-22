@@ -3,14 +3,31 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const AppDataSource = new DataSource({
-  type: 'postgres',
-  url: process.env.DATABASE_URL,
-  entities: [__dirname + '/../entities/*.ts'],
-  migrations: [__dirname + '/../migrations/*.ts'],
-  synchronize: true,  // Be careful with this in production
-  logging: true,
-  ssl: false  // Disable SSL for local development
-});
+const isTestEnv = process.env.NODE_ENV === "test";
+
+
+console.log(`Environment: ${process.env.NODE_ENV}`);
+const AppDataSource = new DataSource(
+  isTestEnv
+    ? {
+        type: "sqlite",
+        database: ":memory:",
+        entities: [__dirname + '/../entities/*.{ts,js}'],
+        migrations: [__dirname + '/../migrations/*.{ts,js}'],
+        synchronize: true, 
+        logging: false, 
+      }
+    : {
+        type: "postgres",
+        url: process.env.DATABASE_URL,
+        entities: [__dirname + '/../entities/*.{ts,js}'],
+        migrations: [__dirname + '/../migrations/*.{ts,js}'],
+        ssl: {
+          rejectUnauthorized: false,
+        },
+        synchronize: false,
+        logging: false,
+      }
+);
 
 export default AppDataSource;
