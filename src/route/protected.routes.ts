@@ -17,6 +17,7 @@ router.get('/test-token', authMiddleware, (req, res) => {
    res.json({ message: 'Protected route accessed' });
 });
 
+
 /**
 * Protected Route - Admin Only Access
 * Route: GET /admin
