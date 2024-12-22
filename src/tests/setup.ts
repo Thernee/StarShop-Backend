@@ -1,29 +1,23 @@
-import AppDataSource from "../config/ormconfig";
+import testDataSource from "../config/ormconfig.test";
 
 beforeAll(async () => {
-  if (!AppDataSource.isInitialized) {
-    await AppDataSource.initialize();
+  if (!testDataSource.isInitialized) {
+    await testDataSource.initialize();
   }
 
-  if (process.env.NODE_ENV === "test") {
-    await AppDataSource.synchronize();
-
-    const queryRunner = AppDataSource.createQueryRunner();
-    const tables = await queryRunner.getTables();
-    await queryRunner.release();
-  }
+  await testDataSource.synchronize();
 });
 
 afterEach(async () => {
-  const entities = AppDataSource.entityMetadatas;
+  const entities = testDataSource.entityMetadatas;
   for (const entity of entities) {
-    const repository = AppDataSource.getRepository(entity.name);
+    const repository = testDataSource.getRepository(entity.name);
     await repository.clear();
   }
 });
 
 afterAll(async () => {
-  if (AppDataSource.isInitialized) {
-    await AppDataSource.destroy();
+  if (testDataSource.isInitialized) {
+    await testDataSource.destroy();
   }
 });

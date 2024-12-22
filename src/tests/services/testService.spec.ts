@@ -1,5 +1,5 @@
 import { setupTestDB, teardownTestDB } from "../../utils/test-utils";
-import { testDataSource } from "../../config/ormconfig.test";
+import testDataSource from "../../config/ormconfig.test";
 import { TestService } from "../../services/test.service";
 import { TestEntity } from "../../entities/testEntity";
 

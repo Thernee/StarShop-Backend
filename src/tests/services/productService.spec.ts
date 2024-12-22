@@ -2,7 +2,7 @@ import { ProductService } from '../../services/product.service';
 import { Product } from '../../entities/Product';
 import { Repository } from 'typeorm';
 import { ProductType } from '../../entities/ProductType';
-import AppDataSource from '../../config/ormconfig';
+import testDataSource from '../../config/ormconfig.test';
 
 jest.mock('../../config/ormconfig', () => ({
     getRepository: jest.fn(),
@@ -22,7 +22,7 @@ jest.mock('../../config/ormconfig', () => ({
         create: jest.fn(),
       } as unknown as jest.Mocked<Repository<Product>>;
   
-      (AppDataSource.getRepository as jest.Mock).mockReturnValue(mockRepo);
+      (testDataSource.getRepository as jest.Mock).mockReturnValue(mockRepo);
   
       service = new ProductService();
     });
@@ -39,7 +39,7 @@ jest.mock('../../config/ormconfig', () => ({
     };
 
     const productTypeRepo = { findOne: jest.fn().mockResolvedValue(productType) };
-    (AppDataSource.getRepository as jest.Mock)
+    (testDataSource.getRepository as jest.Mock)
       .mockReturnValueOnce(productTypeRepo) 
       .mockReturnValueOnce(mockRepo); 
 
