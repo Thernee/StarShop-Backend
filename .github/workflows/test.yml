@@ -1,4 +1,4 @@
-name: CI - Run Tests
+name: Run Tests
 
 on:
   push:
@@ -24,8 +24,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Set Environment Variables
-        run: echo "NODE_ENV=test" >> $GITHUB_ENV
-
       - name: Run Tests
+        env:
+          NODE_ENV: test
         run: npm test
