@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { ProductVariantAttributeService as ProductVariantAttributeServiceClass } from '../services/productVariantAttribute.service';
-import AppDataSource from '../config/ormconfig';
 
 const ProductVariantAttributeService = new ProductVariantAttributeServiceClass();
 
