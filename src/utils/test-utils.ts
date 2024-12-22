@@ -8,7 +8,7 @@ export async function setupTestDB() {
   }
 
   console.log("Synchronizing database...");
-  await AppDataSource.synchronize(true); // Forzar sincronización
+  await AppDataSource.synchronize(true);
   console.log("Database synchronized.");
 }
 

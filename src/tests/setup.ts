@@ -19,7 +19,7 @@ afterEach(async () => {
   const entities = AppDataSource.entityMetadatas;
   for (const entity of entities) {
     const repository = AppDataSource.getRepository(entity.name);
-    await repository.clear();
+    await repository.query(`DELETE FROM ${entity.tableName};`);
   }
   console.log("Database cleared.");
 });

@@ -28,7 +28,7 @@ jobs:
       run: echo "NODE_ENV=test" >> $GITHUB_ENV
 
     - name: Run Tests
-      run: npm test
+      run: npm test -- --detectOpenHandles --runInBand
 
     - name: Debug on Failure
       if: failure()

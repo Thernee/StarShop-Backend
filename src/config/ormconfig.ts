@@ -10,16 +10,16 @@ const AppDataSource = new DataSource(
     ? {
         type: "sqlite",
         database: ":memory:",
-        entities: [__dirname + '/../entities/*.ts'],
-        migrations: [__dirname + '/../migrations/*.ts'],
+        entities: [__dirname + '/../entities/*.{ts,js}'],
+        migrations: [__dirname + '/../migrations/*.{ts,js}'],
         synchronize: true, 
         logging: false, 
       }
     : {
         type: "postgres",
         url: process.env.DATABASE_URL,
-        entities: [__dirname + '/../entities/*.ts'],
-        migrations: [__dirname + '/../migrations/*.ts'],
+        entities: [__dirname + '/../entities/*.{ts,js}'],
+        migrations: [__dirname + '/../migrations/*.{ts,js}'],
         ssl: {
           rejectUnauthorized: false,
         },
