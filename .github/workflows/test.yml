@@ -12,6 +12,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: testdb
+
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
@@ -22,7 +32,20 @@ jobs:
         node-version: 16
 
     - name: Install Dependencies
-      run: npm install
+      run: npm ci
+
+    - name: Wait for Postgres to be Ready
+      run: |
+        until pg_isready -h localhost -p 5432; do
+          echo "Waiting for database connection..."
+          sleep 1
+        done
 
     - name: Run Tests
+      env:
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+        DB_NAME: testdb
       run: npm test

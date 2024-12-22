@@ -8,8 +8,13 @@ import { Attribute } from '../entities/Attribute';
 import { AttributeValue } from '../entities/AttributeValue';
 
 export const testDataSource = new DataSource({
-  type: 'sqlite',
-  database: ':memory:',
+  type: 'postgres',
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5432', 10),
+  username: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'postgres',
+  database: process.env.DB_NAME || 'testdb',
   synchronize: true,
-  entities: [TestEntity, User, Product, ProductType, ProductVariant, Attribute, AttributeValue]
+  logging: false,
+  entities: [TestEntity, User, Product, ProductType, ProductVariant, Attribute, AttributeValue],
 });
