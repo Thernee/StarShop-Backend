@@ -1,5 +1,6 @@
 import { Repository } from 'typeorm';
 import { ProductVariant } from '../entities/ProductVariant';
+import { Product } from '../entities/Product';
 import AppDataSource from '../config/ormconfig';
 
 export class ProductVariantService {
@@ -12,10 +13,18 @@ export class ProductVariantService {
   /**
    * Create a new ProductVariant
    * @param data Partial data to create a ProductVariant
+   * @param productId ID of the associated Product
    * @returns The created ProductVariant
    */
-  async create(data: Partial<ProductVariant>): Promise<ProductVariant> {
-    const productVariant = this.repository.create(data);
+  async create(data: Partial<ProductVariant>, productId: number): Promise<ProductVariant> {
+    const productRepo = AppDataSource.getRepository(Product);
+    const product = await productRepo.findOne({ where: { id: productId } });
+
+    if (!product) {
+      throw new Error(`Product with ID ${productId} not found`);
+    }
+
+    const productVariant = this.repository.create({ ...data, product });
     return await this.repository.save(productVariant);
   }
 

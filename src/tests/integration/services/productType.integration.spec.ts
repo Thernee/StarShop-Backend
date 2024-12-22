@@ -36,17 +36,17 @@ describe("ProductVariantService Integration Tests", () => {
       name: "Laptop",
       description: "High-end gaming laptop",
     });
-    await productRepo.save(product);
+    const savedProduct = await productRepo.save(product);
 
     const variantData = { sku: "LAP123", price: 999.99, stock: 10 };
-    const variant = await service.create({ ...variantData, product });
+    const variant = await service.create(variantData, savedProduct.id);
 
     expect(variant).toBeDefined();
     expect(variant.id).toBeDefined();
     expect(variant.sku).toBe("LAP123");
     expect(variant.product).toEqual(
       expect.objectContaining({
-        id: product.id,
+        id: savedProduct.id,
         name: "Laptop",
       })
     );
@@ -55,11 +55,11 @@ describe("ProductVariantService Integration Tests", () => {
   it("should fetch all ProductVariants with their Products", async () => {
     const productRepo = AppDataSource.getRepository(Product);
     const product = productRepo.create({ name: "Laptop" });
-    await productRepo.save(product);
+    const savedProduct = await productRepo.save(product);
 
     const variantRepo = AppDataSource.getRepository(ProductVariant);
-    const variant1 = variantRepo.create({ sku: "LAP123", price: 999.99, stock: 10, product });
-    const variant2 = variantRepo.create({ sku: "LAP456", price: 899.99, stock: 5, product });
+    const variant1 = variantRepo.create({ sku: "LAP123", price: 999.99, stock: 10, product: savedProduct });
+    const variant2 = variantRepo.create({ sku: "LAP456", price: 899.99, stock: 5, product: savedProduct });
 
     await variantRepo.save([variant1, variant2]);
 
@@ -78,17 +78,17 @@ describe("ProductVariantService Integration Tests", () => {
   it("should delete a ProductVariant", async () => {
     const productRepo = AppDataSource.getRepository(Product);
     const product = productRepo.create({ name: "Laptop" });
-    await productRepo.save(product);
+    const savedProduct = await productRepo.save(product);
 
     const variantRepo = AppDataSource.getRepository(ProductVariant);
-    const variant = variantRepo.create({ sku: "LAP123", price: 999.99, stock: 10, product });
-    await variantRepo.save(variant);
+    const variant = variantRepo.create({ sku: "LAP123", price: 999.99, stock: 10, product: savedProduct });
+    const savedVariant = await variantRepo.save(variant);
 
-    const deleted = await service.delete(variant.id);
+    const deleted = await service.delete(savedVariant.id);
 
     expect(deleted).toBe(true);
 
-    const foundVariant = await variantRepo.findOne({ where: { id: variant.id } });
+    const foundVariant = await variantRepo.findOne({ where: { id: savedVariant.id } });
     expect(foundVariant).toBeNull();
   });
 });
