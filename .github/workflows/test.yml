@@ -25,13 +25,9 @@ jobs:
       run: npm install
 
     - name: Set Environment Variables
-      run: echo "NODE_ENV=test" >> $GITHUB_ENV
+      env:
+        NODE_ENV: test
+      run: echo "Environment set to test"
 
     - name: Run Tests
-      run: npm test -- --detectOpenHandles --runInBand
-
-    - name: Debug on Failure
-      if: failure()
-      run: |
-        echo "Tests failed. Debugging logs:"
-        cat test-results.log || echo "No logs found"
+      run: npm test

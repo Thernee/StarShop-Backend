@@ -1,6 +1,7 @@
 import AppDataSource from "../config/ormconfig";
 
 export async function setupTestDB() {
+  console.log("process.env.NODE_ENV")
   console.log("Initializing database...");
   if (!AppDataSource.isInitialized) {
     await AppDataSource.initialize();

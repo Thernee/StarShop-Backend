@@ -1,4 +1,7 @@
 import AppDataSource from "../config/ormconfig";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 beforeAll(async () => {
   console.log("Initializing database...");
@@ -9,10 +12,11 @@ beforeAll(async () => {
 
   if (process.env.NODE_ENV === "test") {
     console.log("Synchronizing database...");
-    await AppDataSource.synchronize();
+    await AppDataSource.synchronize(true);
     console.log("Database synchronized.");
   }
 });
+
 
 afterEach(async () => {
   console.log("Clearing database...");

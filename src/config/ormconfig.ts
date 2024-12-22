@@ -5,6 +5,8 @@ dotenv.config();
 
 const isTestEnv = process.env.NODE_ENV === "test";
 
+
+console.log(`Environment: ${process.env.NODE_ENV}`);
 const AppDataSource = new DataSource(
   isTestEnv
     ? {
