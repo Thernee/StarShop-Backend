@@ -24,5 +24,10 @@ jobs:
     - name: Install Dependencies
       run: npm install
 
+    - name: Set Environment Variables
+      env:
+        NODE_ENV: test
+      run: echo "Environment set to test"
+
     - name: Run Tests
       run: npm test

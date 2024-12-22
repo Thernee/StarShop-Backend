@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // user.entity.ts - User Database Model
 
 // Import decorators from TypeORM to define database structure
@@ -31,4 +32,30 @@ export class User {
    // Automatically updates whenever the user record is modified
    @UpdateDateColumn()
    updatedAt: Date;
+=======
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+
+@Entity('users')
+export class User {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ unique: true })
+  walletAddress: string;
+
+  @Column({ nullable: true })
+  name: string;
+
+  @Column({ nullable: true })
+  email: string;
+
+  @Column()
+  role: 'buyer' | 'seller' | 'admin';
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+>>>>>>> main
 }
