@@ -1,18 +1,13 @@
 import 'reflect-metadata';
 import express from 'express';
 import AppDataSource from './config/ormconfig';
-<<<<<<< HEAD
 import router from './route/protected.routes';
-=======
-import userRoutes from './routes/UserRoutes';
-
->>>>>>> main
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use('/users', userRoutes);
+// app.use('/users', userRoutes);
 
 AppDataSource.initialize()
   .then(() => {
@@ -30,11 +25,7 @@ app.get('/', (req, res) => {
 });
 
 
-<<<<<<< HEAD
 app.use('/', router)
 
 console.log('JWT_SECRET:', process.env.JWT_SECRET); // Debug log (remove in production)
 
-=======
-export default app; // Export the app for testing
->>>>>>> main
