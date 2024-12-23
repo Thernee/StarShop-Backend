@@ -1,13 +1,14 @@
 import 'reflect-metadata';
 import express from 'express';
 import AppDataSource from './config/ormconfig';
-import router from './route/protected.routes';
+import indexRoutes from './routes/index';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-// app.use('/users', userRoutes);
+// Use the index routes
+app.use('/api/v1', indexRoutes);
 
 AppDataSource.initialize()
   .then(() => {
@@ -19,10 +20,6 @@ AppDataSource.initialize()
   .catch((error) => {
     console.error('Error during Data Source initialization:', error);
   });
-
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
-});
 
 
 app.use('/', router)
