@@ -1,10 +1,10 @@
 import AppDataSource from "../../../config/ormconfig";
+import { ProductVariant } from "../../../entities/ProductVariant";
 import { Product } from "../../../entities/Product";
-import { ProductType } from "../../../entities/ProductType";
-import { ProductService } from "../../../services/product.service";
+import { ProductVariantService } from "../../../services/productVariant.service";
 
-describe("ProductService Integration Tests", () => {
-  let service: ProductService;
+describe("ProductVariantService Integration Tests", () => {
+  let service: ProductVariantService;
 
   beforeAll(async () => {
     if (!AppDataSource.isInitialized) {
@@ -12,7 +12,7 @@ describe("ProductService Integration Tests", () => {
     }
     await AppDataSource.synchronize(true);
 
-    service = new ProductService();
+    service = new ProductVariantService();
   });
 
   afterEach(async () => {
@@ -29,52 +29,66 @@ describe("ProductService Integration Tests", () => {
     }
   });
 
-  it("should create a Product with ProductType", async () => {
-    const productTypeRepo = AppDataSource.getRepository(ProductType);
+  it("should create a ProductVariant with Product", async () => {
+    const productRepo = AppDataSource.getRepository(Product);
 
-    const productType = productTypeRepo.create({
-      name: "Electronics",
-      description: "Category for electronics",
+    const product = productRepo.create({
+      name: "Laptop",
+      description: "High-end gaming laptop",
     });
-    await productTypeRepo.save(productType);
+    const savedProduct = await productRepo.save(product);
 
-    const productData = { name: "Laptop", description: "Gaming Laptop" };
-    const product = await service.create(productData, productType.id);
+    const variantData = { sku: "LAP123", price: 999.99, stock: 10 };
+    const variant = await service.create(variantData, savedProduct.id);
 
-    expect(product).toBeDefined();
-    expect(product.id).toBeDefined();
-    expect(product.productType).toEqual(
+    expect(variant).toBeDefined();
+    expect(variant.id).toBeDefined();
+    expect(variant.sku).toBe("LAP123");
+    expect(variant.product).toEqual(
       expect.objectContaining({
-        id: productType.id,
-        name: "Electronics",
+        id: savedProduct.id,
+        name: "Laptop",
       })
     );
   });
 
-  it("should fetch Products associated with a ProductType", async () => {
-    const productTypeRepo = AppDataSource.getRepository(ProductType);
+  it("should fetch all ProductVariants with their Products", async () => {
     const productRepo = AppDataSource.getRepository(Product);
+    const product = productRepo.create({ name: "Laptop" });
+    const savedProduct = await productRepo.save(product);
 
-    const productType = productTypeRepo.create({ name: "Electronics" });
-    const savedProductType = await productTypeRepo.save(productType);
+    const variantRepo = AppDataSource.getRepository(ProductVariant);
+    const variant1 = variantRepo.create({ sku: "LAP123", price: 999.99, stock: 10, product: savedProduct });
+    const variant2 = variantRepo.create({ sku: "LAP456", price: 899.99, stock: 5, product: savedProduct });
 
-    const product1 = productRepo.create({ name: "Laptop", productType: savedProductType });
-    const product2 = productRepo.create({ name: "Phone", productType: savedProductType });
+    await variantRepo.save([variant1, variant2]);
 
-    await productRepo.save([product1, product2]);
+    const variants = await service.getAll();
 
-    const fetchedProductType = await productTypeRepo.findOne({
-      where: { id: savedProductType.id },
-      relations: ["products"],
-    });
-
-    expect(fetchedProductType).toBeDefined();
-    expect(fetchedProductType.products).toHaveLength(2);
-    expect(fetchedProductType.products).toEqual(
+    expect(variants).toBeDefined();
+    expect(variants).toHaveLength(2);
+    expect(variants).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ name: "Laptop" }),
-        expect.objectContaining({ name: "Phone" }),
+        expect.objectContaining({ sku: "LAP123" }),
+        expect.objectContaining({ sku: "LAP456" }),
       ])
     );
+  });
+
+  it("should delete a ProductVariant", async () => {
+    const productRepo = AppDataSource.getRepository(Product);
+    const product = productRepo.create({ name: "Laptop" });
+    const savedProduct = await productRepo.save(product);
+
+    const variantRepo = AppDataSource.getRepository(ProductVariant);
+    const variant = variantRepo.create({ sku: "LAP123", price: 999.99, stock: 10, product: savedProduct });
+    const savedVariant = await variantRepo.save(variant);
+
+    const deleted = await service.delete(savedVariant.id);
+
+    expect(deleted).toBe(true);
+
+    const foundVariant = await variantRepo.findOne({ where: { id: savedVariant.id } });
+    expect(foundVariant).toBeNull();
   });
 });

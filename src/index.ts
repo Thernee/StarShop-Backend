@@ -3,8 +3,6 @@ import express from 'express';
 import AppDataSource from './config/ormconfig';
 import indexRoutes from './routes/index';
 
-
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -24,4 +22,7 @@ AppDataSource.initialize()
   });
 
 
-export default app; // Export the app for testing
+app.use('/', router)
+
+console.log('JWT_SECRET:', process.env.JWT_SECRET); // Debug log (remove in production)
+
