@@ -1,6 +1,6 @@
-import { Repository } from "typeorm";
-import { User } from "../entities/User";
-import AppDataSource from "../config/ormconfig";
+import { Repository } from 'typeorm';
+import { User } from '../entities/User';
+import AppDataSource from '../config/ormconfig';
 
 export class UserService {
   private userRepository: Repository<User>;
@@ -14,10 +14,10 @@ export class UserService {
       const user = this.userRepository.create(data);
       return await this.userRepository.save(user);
     } catch (error: any) {
-      if (error.code === "23505" || error.code === "SQLITE_CONSTRAINT") {
-        if (error.message.includes("UQ_fc71cd6fb73f95244b23e2ef113")) {
+      if (error.code === '23505' || error.code === 'SQLITE_CONSTRAINT') {
+        if (error.message.includes('UQ_fc71cd6fb73f95244b23e2ef113')) {
           throw new Error(
-            "The wallet address is already in use. Please use a unique wallet address."
+            'The wallet address is already in use. Please use a unique wallet address.'
           );
         }
       }
@@ -40,10 +40,10 @@ export class UserService {
 
       return await this.userRepository.save(user);
     } catch (error: any) {
-      if (error.code === "23505" || error.code === "SQLITE_CONSTRAINT") {
-        if (error.message.includes("UQ_fc71cd6fb73f95244b23e2ef113")) {
+      if (error.code === '23505' || error.code === 'SQLITE_CONSTRAINT') {
+        if (error.message.includes('UQ_fc71cd6fb73f95244b23e2ef113')) {
           throw new Error(
-            "The wallet address is already in use. Please use a unique wallet address."
+            'The wallet address is already in use. Please use a unique wallet address.'
           );
         }
       }
