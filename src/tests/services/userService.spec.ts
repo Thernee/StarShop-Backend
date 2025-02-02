@@ -25,7 +25,7 @@ describe("UserService", () => {
 
     (AppDataSource.getRepository as jest.Mock).mockReturnValue(mockRepo);
 
-    service = new UserService();
+    service = new UserService(AppDataSource); // Pass the mocked AppDataSource
   });
 
   it("should create a new user", async () => {
@@ -54,7 +54,9 @@ describe("UserService", () => {
       role: "buyer",
     };
 
-    const error = new Error("The wallet address is already in use. Please use a unique wallet address.") as any;
+    const error = new Error(
+      "The wallet address is already in use. Please use a unique wallet address."
+    ) as any;
     error.code = "SQLITE_CONSTRAINT";
     mockRepo.save.mockRejectedValue(error);
 
@@ -64,7 +66,11 @@ describe("UserService", () => {
   });
 
   it("should retrieve an existing user by ID", async () => {
-    const user = { id: 1, name: "Existing User", email: "existing@example.com" } as User;
+    const user = {
+      id: 1,
+      name: "Existing User",
+      email: "existing@example.com",
+    } as User;
     mockRepo.findOneBy.mockResolvedValue(user);
 
     const result = await service.getUserById(1);
@@ -81,7 +87,11 @@ describe("UserService", () => {
   });
 
   it("should update a user's information", async () => {
-    const user = { id: 1, name: "Existing User", email: "existing@example.com" } as User;
+    const user = {
+      id: 1,
+      name: "Existing User",
+      email: "existing@example.com",
+    } as User;
     const updatedData = { name: "Updated User" };
     const updatedUser = { ...user, ...updatedData } as User;
 
