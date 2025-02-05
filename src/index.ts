@@ -4,6 +4,7 @@ import SwaggerUI from 'swagger-ui-express';
 import YAML from 'yamljs';
 import AppDataSource from './config/ormconfig';
 import indexRoutes from './routes/index';
+import { errorHandler } from './middleware/error.middleware';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,6 +18,9 @@ app.use('/api/v1', indexRoutes);
 
 // Swagger documentation route
 app.use('/docs', SwaggerUI.serve, SwaggerUI.setup(swaggerDocument));
+
+// Register the global error-handling middleware
+app.use(errorHandler);
 
 AppDataSource.initialize()
   .then(() => {
