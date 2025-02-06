@@ -20,7 +20,6 @@ export const getUser = asyncHandler(async (req: Request, res: Response, next: Ne
   const user = await userService.getUserById(Number(req.params.id));
   if (!user) {
     res.status(404);
-    // Throw an error that will be caught by the error middleware.
     throw new NotFoundError('User not found', {
       field: 'id',
       error: `No user found with id ${req.params.id}`
@@ -37,7 +36,10 @@ export const updateUser = asyncHandler(async (req: Request, res: Response, next:
   const user = await userService.updateUser(Number(req.params.id), req.body);
   if (!user) {
     res.status(404);
-    throw new Error('User not found');
+    throw new NotFoundError('User not found', {
+      field: 'id',
+      error: `No user found with id ${req.params.id}`
+    });
   }
   res.status(200).json({
     success: true,
@@ -51,7 +53,10 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response, next:
   const success = await userService.deleteUser(Number(req.params.id));
   if (!success) {
     res.status(404);
-    throw new Error('User not found');
+    throw new NotFoundError('User not found', {
+      field: 'id',
+      error: `No user found with id ${req.params.id}`
+    });  
   } else {
     res.sendStatus(204);
   }
