@@ -30,8 +30,8 @@ export class AttributeValueService {
   }
 
   //get all attribute values
-  async getAll(): Promise<AttributeValue[]> {
-    return await this.repository.find({ relations: ["attribute"] });
+  async getAll(limit?: number, offset?: number): Promise<AttributeValue[]> {
+    return await this.repository.find({ skip: offset, take: limit, relations: ["attribute"] });
   }
 
   //get attribute value by id

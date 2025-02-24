@@ -26,7 +26,10 @@ export const createAttributeValue = async (req: Request, res: Response): Promise
 //get all attribute values
 export const getAllAttributesValues = async (req: Request, res: Response): Promise<void> => {
     try {
-        const attributeValues = await attributeValueService.getAll();
+        const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
+        const offset = req.query.offset ? parseInt(req.query.offset as string, 10) : undefined;        
+
+        const attributeValues = await attributeValueService.getAll(limit, offset);
         res
         .status(200)
         .json({ success: true, message: "Attribute Values Retrieved  Successfully", data: attributeValues });
