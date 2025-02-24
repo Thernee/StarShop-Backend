@@ -23,7 +23,9 @@ export const createAttribute = async (req: Request, res: Response): Promise<void
 //get all attributes
 export const getAllAttributes = async (req: Request, res: Response): Promise<void> => {
     try {
-        const attributes = await attributeService.getAll();
+        const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
+        const offset = req.query.offset ? parseInt(req.query.offset as string, 10) : undefined;        
+        const attributes = await attributeService.getAll(limit, offset);
         res
         .status(200)
         .json({ success: true, message: "Attributes Retrieved  Successfully", data: attributes });

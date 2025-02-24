@@ -17,10 +17,13 @@ export class AttributeService {
 
 
     //get all attributes
-    async getAll(): Promise<Attribute[]> {
-        return await this.repository.find();
+    async getAll(limit?: number, offset?: number): Promise<Attribute[]> {
+    return await this.repository.find({
+        skip: offset,
+        take: limit,
+    });
     }
-
+    
 
     //get attribute by id
     async getById(id: number): Promise<Attribute | null> {
