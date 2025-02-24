@@ -144,7 +144,7 @@ describe('ProductVariantService', () => {
     
         const result = await service.updateStockAfterPurchase(1, 5);
     
-        expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+        expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 }, relations: ['product'] });
         expect(mockRepo.save).toHaveBeenCalledWith({ ...variant, stock: 5 });
         expect(result).toEqual({ ...variant, stock: 5 });
     });
@@ -155,7 +155,7 @@ describe('ProductVariantService', () => {
         mockRepo.findOne.mockResolvedValue(variant);
     
         await expect(service.updateStockAfterPurchase(1, 5)).rejects.toThrow('Insufficient stock');
-        expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+        expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 }, relations: ['product'] });
         expect(mockRepo.save).not.toHaveBeenCalled();
     });
     
@@ -167,7 +167,7 @@ describe('ProductVariantService', () => {
     
         const result = await service.restoreAfterOrderCanceled(1, 5);
     
-        expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+        expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 }, relations: ['product'] });
         expect(mockRepo.save).toHaveBeenCalledWith({ ...variant, stock: 15 });
         expect(result).toBe(true);
     });
@@ -177,7 +177,7 @@ describe('ProductVariantService', () => {
     
         const result = await service.restoreAfterOrderCanceled(1, 5);
     
-        expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+        expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 }, relations: ['product'] });
         expect(mockRepo.save).not.toHaveBeenCalled();
         expect(result).toBe(false);
     });
