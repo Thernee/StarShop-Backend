@@ -135,4 +135,50 @@ describe('ProductVariantService', () => {
         expect(mockRepo.delete).toHaveBeenCalledWith(1);
         expect(result).toBe(true);
     });
+
+    it('should decrease stock when purchase is made', async () => {
+        const productData = { id: 1, name: 'Laptop', description: 'A high-end gaming laptop', productType: { id: 1, name: 'Electronics', description: 'Category for electronics', createdAt: new Date(), products: [] }, variants: [], createdAt: new Date() };
+        const variant = { id: 1, sku: 'LAP123', price: 999.99, stock: 10, product: productData, createdAt: new Date() };
+        mockRepo.findOne.mockResolvedValue(variant);
+        mockRepo.save.mockResolvedValue({ ...variant, stock: 5 });
+    
+        const result = await service.updateStockAfterPurchase(1, 5);
+    
+        expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+        expect(mockRepo.save).toHaveBeenCalledWith({ ...variant, stock: 5 });
+        expect(result).toEqual({ ...variant, stock: 5 });
+    });
+    
+    it('should throw an error when stock is insufficient', async () => {
+        const productData = { id: 1, name: 'Laptop', description: 'A high-end gaming laptop', productType: { id: 1, name: 'Electronics', description: 'Category for electronics', createdAt: new Date(), products: [] }, variants: [], createdAt: new Date() };
+        const variant = { id: 1, sku: 'LAP123', price: 999.99, stock: 3, product: productData, createdAt: new Date() };
+        mockRepo.findOne.mockResolvedValue(variant);
+    
+        await expect(service.updateStockAfterPurchase(1, 5)).rejects.toThrow('Insufficient stock');
+        expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+        expect(mockRepo.save).not.toHaveBeenCalled();
+    });
+    
+    it('should restore stock when an order is canceled', async () => {
+        const productData = { id: 1, name: 'Laptop', description: 'A high-end gaming laptop', productType: { id: 1, name: 'Electronics', description: 'Category for electronics', createdAt: new Date(), products: [] }, variants: [], createdAt: new Date() };
+        const variant = { id: 1, sku: 'LAP123', price: 999.99, stock: 10, product: productData, createdAt: new Date() };
+        mockRepo.findOne.mockResolvedValue(variant);
+        mockRepo.save.mockResolvedValue({ ...variant, stock: 15 });
+    
+        const result = await service.restoreAfterOrderCanceled(1, 5);
+    
+        expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+        expect(mockRepo.save).toHaveBeenCalledWith({ ...variant, stock: 15 });
+        expect(result).toBe(true);
+    });
+    
+    it('should return false when restoring stock if ProductVariant does not exist', async () => {
+        mockRepo.findOne.mockResolvedValue(null);
+    
+        const result = await service.restoreAfterOrderCanceled(1, 5);
+    
+        expect(mockRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+        expect(mockRepo.save).not.toHaveBeenCalled();
+        expect(result).toBe(false);
+    });
 });
