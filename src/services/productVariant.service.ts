@@ -61,7 +61,7 @@ export class ProductVariantService {
 
   /**
    * Updates the stock level of a ProductVariant after a purchase.
-   * 
+   *
    * @param id - ID of the ProductVariant to update.
    * @param amount - The number of units purchased.
    * @returns The updated ProductVariant or null if not found or stock is insufficient.
@@ -71,7 +71,7 @@ export class ProductVariantService {
     if (!productVariant) return null;
 
     if (productVariant.stock < amount) {
-      throw new Error("Insufficient stock to complete the purchase");
+      throw new Error('Insufficient stock to complete the purchase');
     }
 
     productVariant.stock -= amount;
@@ -80,7 +80,7 @@ export class ProductVariantService {
 
   /**
    * Restores the stock level of a ProductVariant after an order is canceled.
-   * 
+   *
    * @param id - ID of the ProductVariant to update.
    * @param amount - The number of units to restore.
    * @returns True if the stock was successfully restored, false if the ProductVariant was not found.
@@ -93,7 +93,7 @@ export class ProductVariantService {
     await this.repository.save(productVariant);
     return true;
   }
-  
+
   /**
    * Delete a ProductVariant by its ID
    * @param id ID of the ProductVariant to delete
