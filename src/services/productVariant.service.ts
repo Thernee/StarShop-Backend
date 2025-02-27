@@ -24,6 +24,14 @@ export class ProductVariantService {
       throw new Error(`Product with ID ${productId} not found`);
     }
 
+    if (!data.sku) {
+      throw new Error("SKU is required");
+    }
+
+    if (data.price < 0) {
+      throw new Error("Price cannot be negative")
+    }
+
     const productVariant = this.repository.create({ ...data, product });
     return await this.repository.save(productVariant);
   }

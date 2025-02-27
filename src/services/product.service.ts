@@ -14,10 +14,17 @@ export class ProductService {
     const productTypeRepo = AppDataSource.getRepository(ProductType);
     const productType = await productTypeRepo.findOne({ where: { id: productTypeId } });
 
-    if (!productType) return null;
+    if (!productType) throw new Error(`ProductType with id ${productTypeId} not found`);
+    if (!data.name) throw new Error("Name is required");
 
     const product = this.repository.create({ ...data, productType });
-    return await this.repository.save(product);
+    try {
+      const response = await this.repository.save(product);
+      if (!response?.id) throw new Error("Database error");
+      return response;
+    } catch (error) {
+        throw new Error("Database error");
+    }
   }
 
   async getAll(): Promise<Product[]> {
