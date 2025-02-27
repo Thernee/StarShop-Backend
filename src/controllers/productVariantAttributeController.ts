@@ -8,7 +8,7 @@ export const createProductVariantAttribute = async (req: Request, res: Response)
     try {
         const productVariantAttribute = await ProductVariantAttributeService.create(req.body);
         if (!productVariantAttribute) {
-          res.status(400).json({ success: false, message: 'Invalid productVariantId or attributeValueId' });
+          res.status(404).json({ success: false, message: 'ProductVariantId or AttributeValueId not found' });
         } else {
           res.status(201).json({ success: true, message: 'Product Variant Attribute Created Successfully', data: productVariantAttribute });
         }

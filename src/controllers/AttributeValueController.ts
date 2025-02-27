@@ -9,7 +9,7 @@ export const createAttributeValue = async (req: Request, res: Response): Promise
         const attributeValue = await attributeValueService.create(req.body);
         if (!attributeValue) {
             res
-            .status(400)
+            .status(404)
             .json({ success: false, message: "Attribute not found" });
         } else {
             res

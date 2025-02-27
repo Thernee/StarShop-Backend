@@ -21,14 +21,16 @@ export class AuthController {
            
            // Check if wallet address was provided
            if (!walletAddress) {
-               throw new Error('Wallet address is required');
+            return res.status(400).json({ success: false, message: 'Wallet address is required' });
            }
 
            // Authenticate user and get JWT token
            const token = await AuthService.authenticateUser(walletAddress);
-
+           if (!token) {
+            return res.status(401).json({ success: false, message: 'Invalid wallet address or authentication failed' });
+           }
            // Send token back to client
-           res.json({ token });
+           res.status(200).json({ token });
        } catch (error) {
            // Pass any errors to error handling middleware
            next(error);

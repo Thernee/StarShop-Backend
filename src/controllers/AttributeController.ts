@@ -85,7 +85,7 @@ export const deleteAttribute = async (req: Request, res: Response): Promise<void
             .json({ success: false, message: "Attribute Not Found" });
         } else {
             res
-            .status(200)
+            .status(204)
             .send()
         }
     } catch (error) {
