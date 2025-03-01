@@ -27,13 +27,20 @@ export class AttributeService {
 
 
     //get all attributes
-    async getAll(limit?: number, offset?: number): Promise<Attribute[]> {
-    return await this.repository.find({
-        skip: offset,
-        take: limit,
-    });
-    }
     
+    /**
+     * Retrieves a list of attributes with optional pagination.
+     *
+     * @param {number} [limit] - The maximum number of attributes to retrieve.
+     * @param {number} [offset] - The number of attributes to skip before starting to collect results.
+     * @returns {Promise<Attribute[]>} A promise that resolves to an array of attributes.
+     */
+    async getAll(limit?: number, offset?: number): Promise<Attribute[]> {
+        return await this.repository.find({
+            skip: offset,
+            take: limit,
+        });
+    }
 
     //get attribute by id
     async getById(id: number): Promise<Attribute | null> {
