@@ -8,25 +8,6 @@ jest.mock('../../config/ormconfig', () => ({
     getRepository: jest.fn(),
   }));
   
-  
-  describe('ProductService', () => {
-    let service: ProductService;
-    let mockRepo: jest.Mocked<Repository<Product>>;
-  
-    beforeEach(() => {
-      mockRepo = {
-        find: jest.fn(),
-        findOne: jest.fn(),
-        save: jest.fn(),
-        delete: jest.fn(),
-        create: jest.fn(),
-      } as unknown as jest.Mocked<Repository<Product>>;
-  
-      (AppDataSource.getRepository as jest.Mock).mockReturnValue(mockRepo);
-  
-      service = new ProductService();
-      (service as any).repository = mockRepo;
-    });
 
 describe('ProductService', () => {
   let service: ProductService;
