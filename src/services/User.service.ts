@@ -25,15 +25,11 @@ export class UserService {
   }
 
   async getUserById(id: number): Promise<User> {
-    try {
-      const user = await this.userRepository.findOneBy({ id });
-      if (!user) {
-        throw new NotFoundError(`User with ID ${id} not found.`);
-      }
-      return user;
-    } catch (error: any) {
-      throw new BadRequestError(`Database Error: ${error.message}`);
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundError(`User with ID ${id} not found.`);
     }
+    return user;
   }
 
   async updateUser(id: number, data: Partial<User>): Promise<User> {
