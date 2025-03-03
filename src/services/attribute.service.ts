@@ -1,13 +1,13 @@
-import { Repository } from "typeorm";
-import { Attribute } from "../entities/Attribute";
-import AppDataSource from "../config/ormconfig";
+import { Repository } from 'typeorm';
+import { Attribute } from '../entities/Attribute';
+import AppDataSource from '../config/ormconfig';
 
 export class AttributeService {
-    private repository: Repository<Attribute>;
+  private repository: Repository<Attribute>;
 
-    constructor() {
-        this.repository = AppDataSource.getRepository(Attribute);
-    }
+  constructor() {
+    this.repository = AppDataSource.getRepository(Attribute);
+  }
 
     // Create new attribute with duplicate check
     async create(data: Partial<Attribute>): Promise<Attribute> {
