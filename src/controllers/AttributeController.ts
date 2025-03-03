@@ -11,7 +11,7 @@ export const createAttribute = async (req: Request, res: Response): Promise<void
         // Check if attribute already exists
         const existingAttribute = await attributeService.getById(name);
         if (existingAttribute) {
-            res.status(400).json({ success: false, message: "Attribute with this name already exists" });
+            res.status(409).json({ success: false, message: "Attribute with this name already exists" });
             return;
         }
 
@@ -84,7 +84,7 @@ export const updateAttribute = async (req: Request, res: Response): Promise<void
         if (name && name !== attribute.name) {
             const existingAttribute = await attributeService.getById(name);
             if (existingAttribute) {
-                res.status(400).json({ success: false, message: "Attribute with this name already exists" });
+                res.status(409).json({ success: false, message: "Attribute with this name already exists" });
                 return;
             }
         }
@@ -103,7 +103,7 @@ export const deleteAttribute = async (req: Request, res: Response): Promise<void
         if (!success) {
             res.status(404).json({ success: false, message: "Attribute Not Found" });
         } else {
-            res.status(200).json({ success: true, message: "Attribute Deleted Successfully" });
+            res.status(204).json({ success: true, message: "Attribute Deleted Successfully" });
         }
     } catch (error) {
         res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });

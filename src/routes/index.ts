@@ -8,8 +8,8 @@ import attributeValuesRoutes from "./AttributeValueRoute";
 const router = Router();
 
 // Health Check Route
-router.get("/health", (req, res) => {
-  res.status(200).json({ status: "success", message: "API is running!" });
+router.get('/health', (req, res) => {
+  res.status(200).json({ status: 'success', message: 'API is running!' });
 });
 
 // Mount route modules
