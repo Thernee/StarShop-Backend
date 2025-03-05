@@ -137,6 +137,115 @@ paths:
         404:
           $ref: "#/components/responses/NotFound"
 
+  /attributes/attributes:
+    get:
+      tags: [Attributes]
+      summary: Get all attributes with pagination
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            example: 10
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            example: 0
+      responses:
+        200:
+          description: List of attributes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Attribute"
+
+  /attribute-values/attribute-values:
+    get:
+      tags: [AttributeValues]
+      summary: Get all attribute values with pagination
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            example: 10
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            example: 0
+      responses:
+        200:
+          description: List of attribute values
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AttributeValue"
+  /products:
+    get:
+      summary: Get filtered and sorted products
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: integer
+          description: Filter by product category ID
+        - in: query
+          name: minPrice
+          schema:
+            type: number
+          description: Minimum price of products
+        - in: query
+          name: maxPrice
+          schema:
+            type: number
+          description: Maximum price of products
+        - in: query
+          name: availability
+          schema:
+            type: string
+            enum: [inStock, outOfStock]
+          description: Filter by availability status
+        - in: query
+          name: minRating
+          schema:
+            type: number
+            minimum: 0
+            maximum: 5
+          description: Minimum rating of products
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+            enum: [price, createdAt, popularity]
+          description: Field to sort results by
+        - in: query
+          name: sortOrder
+          schema:
+            type: string
+            enum: [ASC, DESC]
+          description: Sort order (ASC or DESC)
+      responses:
+        200:
+          description: Successfully retrieved products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
 components:
   schemas:
     User:
