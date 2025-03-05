@@ -7,7 +7,6 @@ import AppDataSource from '../../config/ormconfig';
 jest.mock('../../config/ormconfig', () => ({
     getRepository: jest.fn(),
   }));
-  
 
 describe('ProductService', () => {
   let service: ProductService;

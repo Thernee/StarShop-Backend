@@ -1,9 +1,9 @@
+
 import { Repository } from "typeorm";
 import AppDataSource from "../../config/ormconfig";
 import { UserService } from "../../services/User.service";
 import { User } from "../../entities/User";
 import { NotFoundError } from "../../utils/errors";
-
 
 jest.mock('../../config/ormconfig', () => ({
   getRepository: jest.fn(),

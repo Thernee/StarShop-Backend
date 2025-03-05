@@ -9,6 +9,7 @@ export class AttributeService {
     this.repository = AppDataSource.getRepository(Attribute);
   }
 
+
     // Create new attribute with duplicate check
     async create(data: Partial<Attribute>): Promise<Attribute> {
         // Check if an attribute with the same name already exists

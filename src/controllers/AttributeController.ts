@@ -3,6 +3,7 @@ import { AttributeService } from '../services/attribute.service';
 
 const attributeService = new AttributeService();
 
+
 // Create new attribute
 export const createAttribute = async (req: Request, res: Response): Promise<void> => {
     try {

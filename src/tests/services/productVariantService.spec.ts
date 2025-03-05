@@ -184,7 +184,6 @@ describe('ProductVariantService', () => {
     mockRepo.delete.mockResolvedValue({ affected: 1 } as any);
 
     const result = await service.delete(1);
-
         expect(mockRepo.delete).toHaveBeenCalledWith(1);
         expect(result).toBe(true);
     });
