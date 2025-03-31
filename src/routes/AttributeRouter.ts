@@ -9,10 +9,10 @@ import {
 
 const router = Router();
 
-router.post('/attributes', createAttribute);
-router.get('/attributes', getAllAttributes);
-router.get('/attributes/:id', getAttributeById);
-router.put('/attributes/:id', updateAttribute);
-router.delete('/attributes/:id', deleteAttribute);
+router.post('/', createAttribute);
+router.get('/', getAllAttributes);
+router.get('/:id', getAttributeById);
+router.put('/:id', updateAttribute);
+router.delete('/:id', deleteAttribute);
 
 export default router;
