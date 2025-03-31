@@ -1,10 +1,10 @@
 import { Router } from "express";
-import userRoutes from "./UserRoutes";
+import userRoutes from "./UserRouter";
 import attributeRoutes from "./AttributeRouter";
 import attributeValuesRoutes from "./AttributeValueRouter";
-import productRoutes from "./ProductRoutes";
-import productVariantAttributeRoutes from "./ProductVariantAttributeRoute";
-import protectedRoutes from "./ProtectedRoutes";
+import productRoutes from "./ProductRouter";
+import productVariantAttributeRoutes from "./ProductVariantAttributeRouter";
+import protectedRoutes from "./ProtectedRouter";
 
 // import productRoutes from './product.routes';
 // import storeRoutes from './store.routes';
