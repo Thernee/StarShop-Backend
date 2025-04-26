@@ -5,7 +5,7 @@ import YAML from 'yamljs';
 import AppDataSource from './config/ormconfig';
 import indexRoutes from './routes/index';
 import { errorHandler } from './middleware/error.middleware';
-
+import wishlistRouter from './modules/wishlist/route/wishlist.routes';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -13,8 +13,12 @@ const PORT = process.env.PORT || 3000;
 const swaggerDocument = YAML.load('./openapi.yaml');
 
 app.use(express.json());
+
 // Use the index routes
 app.use('/api/v1', indexRoutes);
+
+// Use wishlist routes
+app.use('/api/v1/wishlist', wishlistRouter); // Integrate wishlist routes here
 
 // Swagger documentation route
 app.use('/docs', SwaggerUI.serve, SwaggerUI.setup(swaggerDocument));
@@ -35,4 +39,4 @@ AppDataSource.initialize()
 
 // app.use('/', router)
 
-console.log('JWT_SECRET:', process.env.JWT_SECRET); // Debug log (remove in production)
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
