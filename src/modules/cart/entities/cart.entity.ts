@@ -22,4 +22,6 @@ export class Cart {
 
   @OneToMany(() => CartItem, cartItem => cartItem.cart, { cascade: true })
   items: CartItem[];
+  discount: any;
+  discountedTotal: number;
 }
