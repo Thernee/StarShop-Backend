@@ -5,6 +5,7 @@ import attributeValuesRoutes from "./AttributeValueRouter";
 import productRoutes from "./ProductRouter";
 import productVariantAttributeRoutes from "./ProductVariantAttributeRouter";
 import protectedRoutes from "./ProtectedRouter";
+import ReviewRouter from '../modules/reviews/routes/review.routes';
 
 // import productRoutes from './product.routes';
 // import storeRoutes from './store.routes';
@@ -22,6 +23,7 @@ router.use("/attributes", attributeRoutes);
 router.use("/attribute-values", attributeValuesRoutes);
 router.use("/products", productRoutes);
 router.use("/product-variant-attributes", productVariantAttributeRoutes);
+router.use('/reviews', ReviewRouter);
 
 // Protected routes
 router.use("/", protectedRoutes);
