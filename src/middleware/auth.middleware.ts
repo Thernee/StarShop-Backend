@@ -10,9 +10,11 @@ import { AuthService } from '../services/auth.service';
  */
 export interface AuthenticatedRequest extends Request {
   user?: {
-    userId: number; // User's unique identifier
-    walletAddress: string; // User's blockchain wallet address
-    role: string; // User's role (e.g., 'user', 'admin')
+    id: number;
+    walletAddress: string;
+    name?: string;
+    email?: string;
+    role: 'buyer' | 'seller' | 'admin';
   };
 }
 
@@ -44,7 +46,7 @@ export const authMiddleware = async (
 
     // Add user information to the request object
     req.user = {
-      userId: decoded.userId,
+      id: decoded.userId,
       walletAddress: decoded.walletAddress,
       role: decoded.role,
     };
