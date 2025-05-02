@@ -1,4 +1,3 @@
-
 import { Repository } from "typeorm";
 import AppDataSource from "../../config/ormconfig";
 import { UserService } from "../../services/User.service";
@@ -35,7 +34,6 @@ describe('UserService', () => {
       name: 'New User',
       email: 'newuser@example.com',
       walletAddress: '0x07D97198756295A96C2158a23963306f507b2f70',
-      role: 'buyer',
     };
 
     const createdUser = { id: 1, ...newUser } as User;
@@ -53,7 +51,6 @@ describe('UserService', () => {
       name: 'Duplicate User',
       email: 'duplicate@example.com',
       walletAddress: '0x06D97198756295A96C2158a23963306f507b2f69',
-      role: 'buyer',
     };
 
     const error = new Error(
