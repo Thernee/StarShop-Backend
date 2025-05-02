@@ -25,7 +25,7 @@ router.use("/attribute-values", attributeValuesRoutes);
 router.use("/products", productRoutes);
 router.use("/product-variant-attributes", productVariantAttributeRoutes);
 router.use("/orders", orderRoutes);
-router.use('/reviews', ReviewRouter);
+// router.use('/reviews', ReviewRouter);
 
 // Protected routes
 router.use("/", protectedRoutes);
