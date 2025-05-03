@@ -15,6 +15,7 @@ const AppDataSource = new DataSource(
           __dirname + '/../entities/**/*.{ts,js}',
           __dirname + '/../modules/**/entities/*.{ts,js}'
         ],
+        // entities: [__dirname + '/../**/entities/*.{ts,js}'],
         migrations: [__dirname + '/../migrations/*.{ts,js}'],
         synchronize: true,
         logging: false,
@@ -28,7 +29,7 @@ const AppDataSource = new DataSource(
         },
         entities: [
           __dirname + '/../entities/**/*.{ts,js}',
-          __dirname + '/../modules/**/entities/*.{ts,js}'
+          __dirname + '/../modules/**/**/entities/*.{ts,js}'
         ],
         migrations: [__dirname + '/../migrations/*.{ts,js}'],
         synchronize: false,

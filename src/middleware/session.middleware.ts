@@ -26,12 +26,12 @@ export const sessionMiddleware = async (
       throw new UnauthorizedException('Invalid or expired session');
     }
 
-    // Attach user to request
-    req.user = {
-      id: session.user.id,
-      walletAddress: session.user.walletAddress,
-      role: session.user.userRoles[0].role
-    };
+    // // Attach user to request
+    // req.user = {
+    //   id: session.user.id,
+    //   // walletAddress: session.user.walletAddress,
+    //   role: session.user.userRoles[0].role.toString() 
+    // };
 
     next();
   } catch (error) {
