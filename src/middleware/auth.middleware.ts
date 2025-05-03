@@ -3,6 +3,18 @@
 // Import necessary types and services
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/auth.service';
+import jwt from 'jsonwebtoken';
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: number;
+        role: string;
+      };
+    }
+  }
+}
 
 /**
  * Interface for extending the Express Request type
@@ -10,9 +22,8 @@ import { AuthService } from '../services/auth.service';
  */
 export interface AuthenticatedRequest extends Request {
   user?: {
-    userId: number; // User's unique identifier
-    walletAddress: string; // User's blockchain wallet address
-    role: string; // User's role (e.g., 'user', 'admin')
+    id: number;
+    role: string;
   };
 }
 
@@ -25,35 +36,26 @@ export const authMiddleware = async (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
-    // Get the authorization header
     const authHeader = req.headers.authorization;
 
-    // Check if authorization header exists and has correct format
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new ReferenceError('No token provided');
+      res.status(401).json({ message: 'Authentication token is missing' });
+      return;
     }
 
-    // Extract the token from the header
-    // Format: "Bearer <token>"
     const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: number; role: string };
 
-    // Verify the token and decode its contents
-    const decoded = AuthService.verifyToken(token);
-
-    // Add user information to the request object
     req.user = {
-      userId: decoded.userId,
-      walletAddress: decoded.walletAddress,
+      id: decoded.id,
       role: decoded.role,
     };
 
-    // Continue to the next middleware or route handler
     next();
   } catch (error) {
-    // Pass any errors to error handling middleware
-    next(error);
+    res.status(401).json({ message: 'Invalid or expired token' });
   }
 };
 

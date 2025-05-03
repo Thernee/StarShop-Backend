@@ -1,41 +1,50 @@
 import { Request, Response, NextFunction } from 'express';
 import { SessionService } from '../services/SessionService';
 import AppDataSource from '../config/ormconfig';
+import { UnauthorizedException } from '@nestjs/common';
 
-interface AuthenticatedRequest extends Request {
-  user?: { id: number; role: string };
-}
+const sessionService = new SessionService(AppDataSource);
 
-// Middleware function to handle session validation
 export const sessionMiddleware = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
-): Promise<void> => {
-  // Extracting the token from the authorization header
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) {
-    // Responding with an error if the token is missing
-    res.status(401).json({ message: 'Authentication token is missing' });
-    return;
-  }
-
+) => {
   try {
-    // Creating an instance of SessionService to validate the session
-    const sessionService = new SessionService(AppDataSource);
-    const session = await sessionService.validateSession(token);
-
-    if (!session) {
-      // Responding with an error if the session is invalid or expired
-      res.status(401).json({ message: 'Session expired or invalid' });
-      return;
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      throw new UnauthorizedException('No authorization header');
     }
 
-    // Attaching user information to the request object
-    req.user = { id: session.user.id, role: session.user.role };
-    next(); // Proceeding to the next middleware
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+      throw new UnauthorizedException('No token provided');
+    }
+
+    const session = await sessionService.validateSession(token);
+    if (!session) {
+      throw new UnauthorizedException('Invalid or expired session');
+    }
+
+    // // Attach user to request
+    // req.user = {
+    //   id: session.user.id,
+    //   // walletAddress: session.user.walletAddress,
+    //   role: session.user.userRoles[0].role.toString() 
+    // };
+
+    next();
   } catch (error) {
-    // Handling any internal server errors
-    res.status(500).json({ message: 'Internal server error' });
+    if (error instanceof UnauthorizedException) {
+      res.status(401).json({
+        success: false,
+        message: error.message
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
   }
 };

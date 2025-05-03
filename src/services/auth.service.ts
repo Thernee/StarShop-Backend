@@ -35,7 +35,7 @@ export class AuthService {
       {
         userId: user.id, // Include user ID in token
         walletAddress: user.walletAddress, // Include wallet address
-        role: user.role, // Include user role
+        role: user.userRoles, // Include user role
       },
       this.JWT_SECRET, // Sign with secret key
       { expiresIn: this.JWT_EXPIRES_IN } // Set token expiration

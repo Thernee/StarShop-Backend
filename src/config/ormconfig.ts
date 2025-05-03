@@ -11,7 +11,11 @@ const AppDataSource = new DataSource(
     ? {
         type: 'sqlite',
         database: ':memory:',
-        entities: [__dirname + '/../entities/*.{ts,js}'],
+        entities: [
+          __dirname + '/../entities/**/*.{ts,js}',
+          __dirname + '/../modules/**/entities/*.{ts,js}'
+        ],
+        // entities: [__dirname + '/../**/entities/*.{ts,js}'],
         migrations: [__dirname + '/../migrations/*.{ts,js}'],
         synchronize: true,
         logging: false,
@@ -23,7 +27,10 @@ const AppDataSource = new DataSource(
         extra: {
           ssl: false,
         },
-        entities: [__dirname + '/../entities/*.{ts,js}'],
+        entities: [
+          __dirname + '/../entities/**/*.{ts,js}',
+          __dirname + '/../modules/**/**/entities/*.{ts,js}'
+        ],
         migrations: [__dirname + '/../migrations/*.{ts,js}'],
         synchronize: false,
         logging: false,
