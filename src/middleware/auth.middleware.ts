@@ -23,18 +23,15 @@ export interface AuthenticatedRequest extends Request {
  * Checks if the request has a valid JWT token
  * If valid, adds user information to the request object
  */
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    // Get the authorization header
     const authHeader = req.headers.authorization;
 
-    // Check if authorization header exists and has correct format
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new ReferenceError('No token provided');
+      res.status(401).json({ message: 'Authentication token is missing' });
+      return;
     }
 
-    // Extract the token from the header
-    // Format: "Bearer <token>"
     const token = authHeader.split(' ')[1];
 
     // Verify the token and decode its contents
@@ -49,18 +46,15 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       updatedAt: new Date(),
     };
 
-    // Add user information to the request object
     req.user = {
       id: decoded.userId,
       walletAddress: decoded.walletAddress,
       role: [roleObj], // Wrap in array to match session middleware
     };
 
-    // Continue to the next middleware or route handler
     next();
   } catch (error) {
-    // Pass any errors to error handling middleware
-    next(error);
+    res.status(401).json({ message: 'Invalid or expired token' });
   }
 };
 

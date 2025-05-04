@@ -1,6 +1,7 @@
 // Import necessary types and services
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
+import asyncHandler from '../middleware/async.middleware';
 
 /**
  * Authentication Controller

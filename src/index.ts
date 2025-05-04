@@ -4,7 +4,13 @@ import SwaggerUI from 'swagger-ui-express';
 import YAML from 'yamljs';
 import AppDataSource from './config/ormconfig';
 import indexRoutes from './routes/index';
+
 import { errorHandler } from './middleware/error.middleware';
+import wishlistRouter from './modules/wishlist/route/wishlist.routes';
+
+import errorHandler from './middleware/error.middleware';
+import { NotFoundError } from './middleware/error.classes';
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,11 +19,17 @@ const PORT = process.env.PORT || 3000;
 const swaggerDocument = YAML.load('./openapi.yaml');
 
 app.use(express.json());
+
 // Use the index routes
 app.use('/api/v1', indexRoutes);
 
+// Use wishlist routes
+app.use('/api/v1/wishlist', wishlistRouter); // Integrate wishlist routes here
+
 // Swagger documentation route
 app.use('/docs', SwaggerUI.serve, SwaggerUI.setup(swaggerDocument));
+
+app.use("*", (req, res, next) => next(new NotFoundError()));
 
 // Register the global error-handling middleware
 app.use(errorHandler);
