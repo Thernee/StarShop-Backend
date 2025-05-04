@@ -2,11 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ReviewService } from '../services/review.service';
 import { CreateReviewDTO } from '../dto/review.dto';
 import { BadRequestError } from '../../../utils/errors';
-
-
-interface AuthenticatedRequest extends Request {
-  user?: { userId: number; role: string };
-}
+import { AuthenticatedRequest } from '../../../middleware/auth.middleware';
 
 
 export class ReviewController {
@@ -18,7 +14,7 @@ export class ReviewController {
 
   async createReview(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.user?.userId;
+      const userId = req.user.id;
       if (!userId) {
         throw new BadRequestError('User ID is required');
       }
@@ -81,7 +77,7 @@ export class ReviewController {
   
   async deleteReview(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.user?.userId;
+      const userId = req.user.id;
       if (!userId) {
         throw new BadRequestError('User ID is required');
       }
