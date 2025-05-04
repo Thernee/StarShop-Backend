@@ -23,7 +23,7 @@ export interface AuthenticatedRequest extends Request {
  * Checks if the request has a valid JWT token
  * If valid, adds user information to the request object
  */
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const authMiddleware = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
 

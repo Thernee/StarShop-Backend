@@ -27,8 +27,8 @@ router.use('/products', productRoutes);
 router.use('/product-variant-attributes', productVariantAttributeRoutes);
 router.use("/orders", orderRoutes);
 // 
-// router.use('/cart', cartRoutes);
-// router.use('/reviews', ReviewRouter);
+router.use('/cart', cartRoutes);
+router.use('/reviews', ReviewRouter);
 
 router.use('/files', fileRoutes);
 
