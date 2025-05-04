@@ -1,14 +1,35 @@
-import { Request } from 'express';
-import { User } from '../entities/User';
+// import { User } from '../../entities/User';
+// import { Request } from 'express';
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: number;
-        walletAddress: string;
-        role: User['role'];
-      };
-    }
+// declare module 'express-serve-static-core' {
+//   interface Request {
+//     user?: {
+//       id: number;
+//       walletAddress: string;
+//       role: User['role'];
+//     };
+//     fileProvider?: 'cloudinary' | 's3';
+//     fileType?: string;
+//   }
+// }
+
+
+import { Request } from 'express';
+import { Role } from '../modules/auth';
+
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: {
+      id: string | number; // Allow both string and number types
+      walletAddress: string;
+      name?: string;
+      email?: string;
+      role: Role[];
+      createdAt?: Date;
+      updatedAt?: Date;
+    };
+    fileProvider?: 'cloudinary' | 's3';
+    fileType?: string;
   }
-} 
+}

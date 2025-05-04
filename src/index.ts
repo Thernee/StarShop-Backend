@@ -47,4 +47,3 @@ AppDataSource.initialize()
 
 // app.use('/', router)
 
-console.log('JWT_SECRET:', process.env.JWT_SECRET);

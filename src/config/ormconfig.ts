@@ -13,7 +13,7 @@ const AppDataSource = new DataSource(
         database: ':memory:',
         entities: [
           __dirname + '/../entities/**/*.{ts,js}',
-          __dirname + '/../modules/**/entities/*.{ts,js}'
+          __dirname + '/../modules/**/entities/*.{ts,js}',
         ],
         // entities: [__dirname + '/../**/entities/*.{ts,js}'],
         migrations: [__dirname + '/../migrations/*.{ts,js}'],
@@ -29,7 +29,7 @@ const AppDataSource = new DataSource(
         },
         entities: [
           __dirname + '/../entities/**/*.{ts,js}',
-          __dirname + '/../modules/**/**/entities/*.{ts,js}'
+          __dirname + '/../modules/**/entities/*.{ts,js}',
         ],
         migrations: [__dirname + '/../migrations/*.{ts,js}'],
         synchronize: false,

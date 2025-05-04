@@ -7,7 +7,7 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "outDir": "./dist",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "typeRoots": ["./src/types", "./node_modules/@types"]
   }
 }
- 

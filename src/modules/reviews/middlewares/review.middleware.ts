@@ -1,10 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { BadRequestError } from '../../../utils/errors';
-
-interface AuthenticatedRequest extends Request {
-    user?: { userId: number; role: string };
-  }
-  
+import { AuthenticatedRequest } from '../../../middleware/auth.middleware';
 
 /**
  * Middleware to validate if a user can review a product
@@ -18,7 +14,7 @@ export const canReviewProduct = async (
 ) => {
   try {
     // Get user ID from the authenticated user
-    const userId = req.user?.userId;
+    const userId = req.user.id;
     
     if (!userId) {
       throw new BadRequestError('User must be authenticated to leave a review');

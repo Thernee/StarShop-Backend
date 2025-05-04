@@ -9,6 +9,7 @@ import {
 import { validationMiddleware } from '../middleware/userValidation.middleware';
 import { CreateUserDto, UpdateUserDto } from '../dtos/UserDTO';
 import { sessionMiddleware } from '../middleware/session.middleware';
+import { AuthController } from '../controllers/auth.controlers';
 
 const router = Router();
 
@@ -22,5 +23,7 @@ router.get('/:id', sessionMiddleware, getUser);
 router.put('/:id', sessionMiddleware, validationMiddleware(UpdateUserDto), updateUser);
 // Route to delete a user by ID
 router.delete('/:id', sessionMiddleware, deleteUser);
+
+router.post('/login', AuthController.login)
 
 export default router;

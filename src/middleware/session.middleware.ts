@@ -5,11 +5,7 @@ import { UnauthorizedException } from '@nestjs/common';
 
 const sessionService = new SessionService(AppDataSource);
 
-export const sessionMiddleware = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const sessionMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
@@ -26,24 +22,24 @@ export const sessionMiddleware = async (
       throw new UnauthorizedException('Invalid or expired session');
     }
 
-    // // Attach user to request
-    // req.user = {
-    //   id: session.user.id,
-    //   // walletAddress: session.user.walletAddress,
-    //   role: session.user.userRoles[0].role.toString() 
-    // };
+    // Attach user to request
+    req.user = {
+      id: session.user.id,
+      walletAddress: session.user.walletAddress,
+      role: [session.user.userRoles[0].role],
+    };
 
     next();
   } catch (error) {
     if (error instanceof UnauthorizedException) {
       res.status(401).json({
         success: false,
-        message: error.message
+        message: error.message,
       });
     } else {
       res.status(500).json({
         success: false,
-        message: 'Internal server error'
+        message: 'Internal server error',
       });
     }
   }

@@ -1,20 +1,6 @@
-// auth.middleware.ts - Authentication Middleware
-
-// Import necessary types and services
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/auth.service';
-import jwt from 'jsonwebtoken';
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: number;
-        role: string;
-      };
-    }
-  }
-}
+import { Role } from '../modules/auth/entities/role.entity';
 
 /**
  * Interface for extending the Express Request type
@@ -23,8 +9,13 @@ declare global {
 export interface AuthenticatedRequest extends Request {
   user?: {
     id: number;
-    role: string;
+    walletAddress: string;
+    name?: string;
+    email?: string;
+    role: Role[];
   };
+  fileProvider?: 'cloudinary' | 's3';
+  fileType?: string;
 }
 
 /**
@@ -32,11 +23,7 @@ export interface AuthenticatedRequest extends Request {
  * Checks if the request has a valid JWT token
  * If valid, adds user information to the request object
  */
-export const authMiddleware = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export const authMiddleware = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
 
@@ -46,11 +33,23 @@ export const authMiddleware = async (
     }
 
     const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: number; role: string };
+
+    // Verify the token and decode its contents
+    const decoded = AuthService.verifyToken(token);
+
+    // Create a Role object from the decoded role string
+    const roleObj: Role = {
+      id: 0, // This will be replaced by the actual role ID in your application
+      name: decoded.role as 'buyer' | 'seller' | 'admin',
+      userRoles: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
 
     req.user = {
-      id: decoded.id,
-      role: decoded.role,
+      id: decoded.userId,
+      walletAddress: decoded.walletAddress,
+      role: [roleObj], // Wrap in array to match session middleware
     };
 
     next();
@@ -64,10 +63,10 @@ export const authMiddleware = async (
  * Checks if the authenticated user has the required role
  * Must be used after authMiddleware
  */
-export const requireRole = (role: string) => {
+export const requireRole = (roleName: 'buyer' | 'seller' | 'admin') => {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     // Check if user exists and has the required role
-    if (!req.user || req.user.role !== role) {
+    if (!req.user || !req.user.role.some((role) => role.name === roleName)) {
       throw new ReferenceError('Insufficient permissions');
     }
     // If role matches, continue to next middleware or route handler
