@@ -57,7 +57,7 @@ export const s3Upload = multer({
     }
   },
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB size limit
+    fileSize: Number(process.env.FILE_UPLOAD_LIMIT) * 1024 * 1024, // 10MB size limit
   },
 });
 

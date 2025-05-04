@@ -40,7 +40,7 @@ export const cloudinaryUpload = multer({
     }
   },
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB
+    fileSize: Number(process.env.FILE_UPLOAD_LIMIT) * 1024 * 1024, // 10MB
   },
 });
 
