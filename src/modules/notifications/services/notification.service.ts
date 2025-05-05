@@ -28,6 +28,9 @@ export class NotificationService {
         message: data.message,
         type: data.type,
         timestamp: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        isRead: false
       });
       
       this.logger.log(`Successfully sent notification to user ${data.userId}`);
@@ -47,6 +50,9 @@ export class NotificationService {
         message: data.message,
         type: data.type,
         timestamp: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        isRead: false
       });
       
       this.logger.log('Successfully broadcasted notification');
