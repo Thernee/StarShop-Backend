@@ -9,6 +9,7 @@ import orderRoutes from "../modules/orders/routes/order.routes";
 import cartRoutes from '../modules/cart/routes/cart.routes';
 import ReviewRouter from '../modules/reviews/routes/review.routes';
 import { fileRoutes } from '../modules/files';
+import notificationRoutes from '../modules/notifications/routes/notification.routes';
 
 // import productRoutes from './product.routes';
 // import storeRoutes from './store.routes';
@@ -29,7 +30,7 @@ router.use("/orders", orderRoutes);
 // 
 router.use('/cart', cartRoutes);
 router.use('/reviews', ReviewRouter);
-
+router.use('/notifications', notificationRoutes);
 router.use('/files', fileRoutes);
 
 // Protected routes
