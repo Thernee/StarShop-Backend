@@ -1,25 +1,25 @@
-import { Request, Response } from 'express';
+import { Controller, Post, Get, Body, UseGuards, Req } from '@nestjs/common';
 import { RoleService } from '../services/role.service';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
+@Controller('roles')
 export class RoleController {
   constructor(private roleService: RoleService) {}
 
-  async assignRole(req: Request, res: Response): Promise<void> {
-    try {
-      const { userId, roleName } = req.body;
-      await this.roleService.assignRoleToUser(userId, roleName);
-      res.json({ success: true });
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
+  @Post('assign')
+  @UseGuards(JwtAuthGuard)
+  async assignRole(
+    @Body() body: { userId: number; roleName: number }
+  ): Promise<{ success: boolean }> {
+    const { userId, roleName } = body;
+    await this.roleService.assignRoleToUser(userId, roleName);
+    return { success: true };
   }
 
-  async getMyRoles(req: Request, res: Response): Promise<void> {
-    try {
-      const roles = await this.roleService.getUserRoles(req.user.id);
-      res.json({ roles: roles.map(role => role.name) });
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
+  @Get('my-roles')
+  @UseGuards(JwtAuthGuard)
+  async getMyRoles(@Req() req): Promise<{ roles: string[] }> {
+    const roles = await this.roleService.getUserRoles(req.user.id);
+    return { roles: roles.map((role) => role.name) };
   }
-} 
+}

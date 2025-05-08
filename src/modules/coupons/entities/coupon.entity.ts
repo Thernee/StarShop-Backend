@@ -1,50 +1,57 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  Index,
+} from 'typeorm';
 import { CouponType } from '../dto/coupon.dto';
+import { CouponUsage } from './coupon-usage.entity';
 
-@Entity()
+@Entity('coupons')
 export class Coupon {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Index()
   @Column({ unique: true })
   code: string;
 
   @Column({ type: 'varchar', enum: CouponType })
   type: CouponType;
 
-  @Column('decimal')
+  @Column('decimal', { precision: 10, scale: 2 })
   value: number;
 
-  @Column('decimal', { nullable: true })
-  min_cart_value?: number;
+  @Column('decimal', { precision: 10, scale: 2 })
+  minPurchaseAmount: number;
 
-  @Column({ type: 'datetime', nullable: true })
-  expires_at?: Date;
+  @Column('decimal', { precision: 10, scale: 2 })
+  maxDiscountAmount: number;
 
-  @Column({ nullable: true })
-  max_uses?: number;
+  @Column()
+  startDate: Date;
+
+  @Column()
+  endDate: Date;
+
+  @Column()
+  usageLimit: number;
+
+  @Column({ default: true })
+  isActive: boolean;
 
   @Column()
   created_by: string;
+
+  @OneToMany(() => CouponUsage, (usage) => usage.coupon)
+  usages: CouponUsage[];
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
-}
-
-@Entity()
-export class CouponUsage {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column()
-  coupon_id: string;
-
-  @Column()
-  user_id: string;
-
-  @CreateDateColumn()
-  usedAt: Date;
 }

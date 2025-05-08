@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { RoleService } from '../services/role.service';
+import { RoleService } from '../../auth/services/role.service';
 
 type RoleName = 'buyer' | 'seller' | 'admin';
 
@@ -8,12 +8,12 @@ type RoleName = 'buyer' | 'seller' | 'admin';
 export class RolesGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    private roleService: RoleService,
+    private roleService: RoleService
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredRoles = this.reflector.get<RoleName[]>('roles', context.getHandler());
-    
+
     if (!requiredRoles) {
       return true;
     }
@@ -31,4 +31,4 @@ export class RolesGuard implements CanActivate {
 
     return this.roleService.hasAnyRole(user.id, requiredRoles);
   }
-} 
+}
