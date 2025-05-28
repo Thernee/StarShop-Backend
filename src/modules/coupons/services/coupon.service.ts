@@ -1,61 +1,73 @@
-import { DataSource, Repository } from 'typeorm';
-import { Coupon, CouponUsage } from '../entities/coupon.entity';
-import { CouponType } from '../dto/coupon.dto';
-import { CreateCouponDto } from '../dto/coupon.dto';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Coupon } from '../entities/coupon.entity';
+import { CouponUsage } from '../entities/coupon-usage.entity';
+import { CouponType, CreateCouponDto } from '../dto/coupon.dto';
+import { ValidationError, NotFoundError } from '../../shared/utils/errors';
 
-export const AppDataSource = new DataSource({
-  type: 'postgres',
-  url: process.env.DATABASE_URL || 'postgres://URL',
-  entities: ['src/modules/coupons/entities/*.ts'],
-  migrations: ['src/migrations/*.ts'],
-  synchronize: false,
-  ssl: true,
-});
-
+@Injectable()
 export class CouponService {
-  private couponRepository: Repository<Coupon>;
-  private couponUsageRepository: Repository<CouponUsage>;
-
-  constructor(dataSource: DataSource = AppDataSource) {
-    this.couponRepository = dataSource.getRepository(Coupon);
-    this.couponUsageRepository = dataSource.getRepository(CouponUsage);
-  }
+  constructor(
+    @InjectRepository(Coupon)
+    private readonly couponRepository: Repository<Coupon>,
+    @InjectRepository(CouponUsage)
+    private readonly couponUsageRepository: Repository<CouponUsage>
+  ) {}
 
   async createCoupon(data: CreateCouponDto): Promise<Coupon> {
+    const existingCoupon = await this.couponRepository.findOne({ where: { code: data.code } });
+    if (existingCoupon) {
+      throw new ValidationError('Coupon code already exists');
+    }
     const coupon = this.couponRepository.create(data);
     return this.couponRepository.save(coupon);
   }
 
-  async validateCoupon(code: string, cartValue: number): Promise<Coupon> {
+  async getCouponByCode(code: string): Promise<Coupon> {
     const coupon = await this.couponRepository.findOne({ where: { code } });
     if (!coupon) {
-      throw new Error('Coupon not found');
+      throw new NotFoundError('Coupon not found');
+    }
+    return coupon;
+  }
+
+  async validateCoupon(code: string, cartValue: number): Promise<Coupon> {
+    const coupon = await this.getCouponByCode(code);
+
+    if (coupon.endDate && new Date() > coupon.endDate) {
+      throw new ValidationError('Coupon has expired');
     }
 
-    if (coupon.expires_at && new Date() > coupon.expires_at) {
-      throw new Error('Coupon has expired');
+    if (coupon.minPurchaseAmount && cartValue < coupon.minPurchaseAmount) {
+      throw new ValidationError('Cart value is below minimum required');
     }
 
-    if (coupon.min_cart_value && cartValue < coupon.min_cart_value) {
-      throw new Error('Cart value is below minimum required');
-    }
-
-    if (coupon.max_uses) {
-      const usageCount = await this.couponUsageRepository.count({ where: { coupon_id: coupon.id } });
-      if (usageCount >= coupon.max_uses) {
-        throw new Error('Coupon usage limit reached');
+    if (coupon.usageLimit) {
+      const usageCount = await this.couponUsageRepository.count({
+        where: { couponId: coupon.id },
+      });
+      if (usageCount >= coupon.usageLimit) {
+        throw new ValidationError('Coupon usage limit reached');
       }
     }
 
     return coupon;
   }
 
-  async applyCouponToOrder(order: { id: string; total: number }, code: string, user_id: string): Promise<{ id: string; total: number; discount: number }> {
+  async applyCouponToOrder(
+    order: { id: string; total: number },
+    code: string,
+    userId: string
+  ): Promise<{ id: string; total: number; discount: number }> {
     const coupon = await this.validateCoupon(code, order.total);
     let discount = 0;
 
     if (coupon.type === CouponType.PERCENTAGE) {
       discount = (order.total * coupon.value) / 100;
+      if (coupon.maxDiscountAmount && discount > coupon.maxDiscountAmount) {
+        discount = coupon.maxDiscountAmount;
+      }
     } else {
       discount = coupon.value;
     }
@@ -67,12 +79,12 @@ export class CouponService {
     };
 
     const couponUsage = this.couponUsageRepository.create({
-      coupon_id: coupon.id,
-      user_id,
+      couponId: coupon.id,
+      userId,
+      usedAt: new Date(),
     });
     await this.couponUsageRepository.save(couponUsage);
 
     return updatedOrder;
   }
 }
-

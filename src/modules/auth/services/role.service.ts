@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Role } from '../entities/role.entity';
 import { UserRole } from '../entities/user-role.entity';
-import { User } from '../../../entities/User';
 
 type RoleName = 'buyer' | 'seller' | 'admin';
 
@@ -13,7 +12,7 @@ export class RoleService {
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
     @InjectRepository(UserRole)
-    private readonly userRoleRepository: Repository<UserRole>,
+    private readonly userRoleRepository: Repository<UserRole>
   ) {}
 
   async create(roleData: Partial<Role>): Promise<Role> {
@@ -59,16 +58,16 @@ export class RoleService {
       where: { userId },
       relations: ['role'],
     });
-    return userRoles.map(userRole => userRole.role);
+    return userRoles.map((userRole) => userRole.role);
   }
 
   async hasRole(userId: number, roleName: RoleName): Promise<boolean> {
     const userRoles = await this.getUserRoles(userId);
-    return userRoles.some(role => role.name === roleName);
+    return userRoles.some((role) => role.name === roleName);
   }
 
   async hasAnyRole(userId: number, roleNames: RoleName[]): Promise<boolean> {
     const userRoles = await this.getUserRoles(userId);
-    return userRoles.some(role => roleNames.includes(role.name));
+    return userRoles.some((role) => roleNames.includes(role.name));
   }
-} 
+}

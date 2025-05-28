@@ -1,40 +1,109 @@
-import { Request, Response } from 'express';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CouponService } from '../services/coupon.service';
 import { CreateCouponDto, ApplyCouponDto } from '../dto/coupon.dto';
+import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
+import { RolesGuard } from '../../shared/guards/roles.guard';
+import { Roles } from '../../shared/decorators/roles.decorator';
+import { Coupon } from '../entities/coupon.entity';
+import { ValidationError, NotFoundError } from '../../shared/utils/errors';
 
+@ApiTags('coupons')
+@Controller('coupons')
 export class CouponController {
   constructor(private readonly couponService: CouponService) {}
 
-  async createCoupon(req: Request, res: Response): Promise<void> {
+  @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: 'Create a new coupon' })
+  @ApiResponse({ status: 201, description: 'Coupon created successfully', type: Coupon })
+  async createCoupon(@Body() createCouponDto: CreateCouponDto): Promise<Coupon> {
     try {
-      const createCouponDto: CreateCouponDto = req.body;
       const coupon = await this.couponService.createCoupon(createCouponDto);
-      res.status(201).json(coupon);
-    } catch (error: any) {
-      res.status(error.status || 500).json({ message: error.message || 'Internal server error' });
+      return coupon;
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
     }
   }
 
-  async validateCoupon(req: Request, res: Response): Promise<void> {
+  @Get(':code')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get a coupon by code' })
+  @ApiResponse({ status: 200, description: 'Coupon found', type: Coupon })
+  @ApiResponse({ status: 404, description: 'Coupon not found' })
+  async getCoupon(@Param('code') code: string): Promise<Coupon> {
     try {
-      const code = req.params.code;
-      const { cartValue } = req.body;
+      const coupon = await this.couponService.getCouponByCode(code);
+      return coupon;
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw new NotFoundException('Coupon not found');
+      }
+      throw error;
+    }
+  }
+
+  @Post(':code/validate')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Validate a coupon' })
+  @ApiResponse({ status: 200, description: 'Coupon is valid', type: Coupon })
+  @ApiResponse({ status: 404, description: 'Coupon not found' })
+  async validateCoupon(
+    @Param('code') code: string,
+    @Body('cartValue') cartValue: number
+  ): Promise<Coupon> {
+    try {
       const coupon = await this.couponService.validateCoupon(code, cartValue);
-      res.status(200).json(coupon);
-    } catch (error: any) {
-      res.status(error.status || 500).json({ message: error.message || 'Internal server error' });
+      return coupon;
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw new NotFoundException('Coupon not found');
+      }
+      throw error;
     }
   }
 
-  async applyCouponToOrder(req: Request, res: Response): Promise<void> {
+  @Post(':code/apply')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Apply a coupon to an order' })
+  @ApiResponse({ status: 200, description: 'Coupon applied successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid coupon' })
+  async applyCouponToOrder(
+    @Param('code') code: string,
+    @Body() applyCouponDto: ApplyCouponDto
+  ): Promise<{ id: string; total: number; discount: number }> {
     try {
-      const orderId = req.params.id;
-      const applyCouponDto: ApplyCouponDto = req.body;
-      const order = { id: orderId, total: applyCouponDto.total || 0 };
-      const updatedOrder = await this.couponService.applyCouponToOrder(order, applyCouponDto.code, applyCouponDto.user_id);
-      res.status(200).json(updatedOrder);
-    } catch (error: any) {
-      res.status(error.status || 500).json({ message: error.message || 'Internal server error' });
+      const updatedOrder = await this.couponService.applyCouponToOrder(
+        applyCouponDto.order,
+        code,
+        applyCouponDto.user_id
+      );
+      return updatedOrder;
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        throw new BadRequestException(error.message);
+      }
+      if (error instanceof NotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      throw error;
     }
   }
 }
