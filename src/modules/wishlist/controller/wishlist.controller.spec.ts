@@ -7,16 +7,51 @@ import { Wishlist } from '../entitities/wishlist.entity';
 import { mockRequest } from '../common/mock/mock-request';
 import { AuthRequest } from '../common/types/auth-request.type';
 import { Role } from '../../auth/entities/role.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Product } from '../../products/entities/product.entity';
+import { JwtService } from '@nestjs/jwt';
 
 describe('WishlistController', () => {
   let controller: WishlistController;
   let service: WishlistService;
+
+  const mockWishlistRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+    find: jest.fn(),
+    delete: jest.fn(),
+    manager: {
+      findOneOrFail: jest.fn(),
+    },
+  };
+
+  const mockProductRepository = {
+    findOne: jest.fn(),
+  };
+
+  const mockJwtService = {
+    sign: jest.fn(),
+    verify: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [WishlistController],
       providers: [
         WishlistService,
+        {
+          provide: getRepositoryToken(Wishlist),
+          useValue: mockWishlistRepository,
+        },
+        {
+          provide: getRepositoryToken(Product),
+          useValue: mockProductRepository,
+        },
+        {
+          provide: JwtService,
+          useValue: mockJwtService,
+        },
         {
           provide: JwtAuthGuard,
           useValue: {
