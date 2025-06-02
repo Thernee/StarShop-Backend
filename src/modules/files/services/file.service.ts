@@ -18,7 +18,7 @@ export class FileService {
    */
   async uploadFile(
     fileData: Express.Multer.File,
-    userId: number,
+    userId: string,
     provider: 'cloudinary' | 's3',
     fileType: FileType
   ): Promise<File> {
@@ -66,7 +66,7 @@ export class FileService {
   /**
    * Get files uploaded by a specific user
    */
-  async getUserFiles(userId: number): Promise<File[]> {
+  async getUserFiles(userId: string): Promise<File[]> {
     return this.fileRepository.find({
       where: { uploadedById: userId },
       order: { uploadedAt: 'DESC' },
@@ -76,7 +76,7 @@ export class FileService {
   /**
    * Delete a file
    */
-  async deleteFile(id: string, userId: number): Promise<boolean> {
+  async deleteFile(id: string, userId: string): Promise<boolean> {
     const file = await this.fileRepository.findOne({
       where: { id, uploadedById: userId },
     });
@@ -105,7 +105,7 @@ export class FileService {
   /**
    * Count user files
    */
-  async countUserFiles(userId: number): Promise<number> {
+  async countUserFiles(userId: string): Promise<number> {
     return this.fileRepository.count({
       where: { uploadedById: userId },
     });

@@ -1,7 +1,7 @@
 // Import necessary types and services
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/auth.service';
-import asyncHandler from '../middleware/async.middleware';
+import { LoginDto } from '../modules/auth/dto/auth.dto';
 
 /**
  * Authentication Controller
@@ -15,17 +15,10 @@ export class AuthController {
    */
   static async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // Extract wallet address from request body
-      const { walletAddress } = req.body;
-
-      // Check if wallet address was provided
-      if (!walletAddress) {
-        res.status(400).json({ success: false, message: 'Wallet address is required' });
-        return;
-      }
+      const loginDto: LoginDto = req.body;
 
       // Authenticate user and get JWT token
-      const token = await AuthService.authenticateUser(walletAddress);
+      const token = await AuthService.authenticateUser(loginDto.walletAddress);
       if (!token) {
         res
           .status(401)
