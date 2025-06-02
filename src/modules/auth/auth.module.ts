@@ -6,7 +6,7 @@ import { PassportModule } from '@nestjs/passport';
 
 import { Role } from './entities/role.entity';
 import { UserRole } from './entities/user-role.entity';
-import { User } from '../../entities/User';
+import { User } from '../../modules/users/entities/user.entity';
 
 import { RoleService } from './services/role.service';
 import { AuthService } from './services/auth.service';

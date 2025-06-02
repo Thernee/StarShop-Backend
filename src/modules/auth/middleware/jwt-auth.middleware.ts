@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException } from '@nestjs/common';
-import { User } from '../../../entities/User';
+import { User } from '../../users/entities/user.entity';
 import AppDataSource from '../../../config/ormconfig';
 
 export const jwtAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -36,7 +36,9 @@ export const jwtAuthMiddleware = async (req: Request, res: Response, next: NextF
     // Attach user to request
     req.user = {
       id: user.id,
-      walletAddress: user.walletAddress,
+      walletAddress: user.email, // Using email as walletAddress temporarily
+      name: user.name,
+      email: user.email,
       role: user.userRoles[0].role.name,
     };
 

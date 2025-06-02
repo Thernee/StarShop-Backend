@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { cartController } from '../controllers/cart.controller';
-import { authMiddleware, AuthenticatedRequest } from '../../../middleware/auth.middleware';
+import { jwtAuthMiddleware } from '../../auth/middleware/jwt-auth.middleware';
+import { AuthenticatedRequest } from '../../shared/types/auth-request.type';
 import { Response } from 'express';
 
 const router = Router();
 
-router.use(authMiddleware);
+router.use(jwtAuthMiddleware);
 
 // Cart routes
 router.get('/', (req, res: Response) => cartController.getCart(req as AuthenticatedRequest, res));

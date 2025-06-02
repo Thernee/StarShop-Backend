@@ -41,9 +41,9 @@ export class RoleService {
     await this.roleRepository.delete(id);
   }
 
-  async assignRoleToUser(userId: string, roleName: string): Promise<void> {
-    // Implementar lógica de asignación de rol
-  }
+  // async assignRoleToUser(userId: string, roleName: string): Promise<void> {
+  //   // Implementar lógica de asignación de rol
+  // }
 
   async removeRoleFromUser(userId: number, roleId: number): Promise<void> {
     await this.userRoleRepository.delete({ userId, roleId });

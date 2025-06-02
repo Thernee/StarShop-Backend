@@ -12,7 +12,7 @@ export class RoleController {
     @Body() body: { userId: number; roleName: number }
   ): Promise<{ success: boolean }> {
     const { userId, roleName } = body;
-    await this.roleService.assignRoleToUser(userId, roleName);
+    await this.roleService.assignRoleToUser(userId.toString(), roleName.toString());
     return { success: true };
   }
 

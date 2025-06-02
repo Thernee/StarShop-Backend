@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../../../services/User.service';
+import { UserService } from '../../users/services/user.service';
 import { RoleService } from './role.service';
-import { User } from '../../../entities/User';
+import { User } from '../../users/entities/user.entity';
 import { UserRole } from '../entities/user-role.entity';
 import { Role } from '../entities/role.entity';
 import AppDataSource from '../../../config/ormconfig';

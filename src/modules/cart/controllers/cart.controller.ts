@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { cartService } from '../services/cart.service';
 import { AddItemDto, RemoveItemDto } from '../dtos/cart.dto';
-import { AuthenticatedRequest } from '../../../middleware/auth.middleware';
+import { AuthenticatedRequest } from '../../shared/types/auth-request.type';
 
 export class CartController {
   async getCart(req: AuthenticatedRequest, res: Response): Promise<void> {

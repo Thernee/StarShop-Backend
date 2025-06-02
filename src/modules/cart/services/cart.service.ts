@@ -3,7 +3,7 @@ import { Cart } from '../entities/cart.entity';
 import { CartItem } from '../entities/cart-item.entity';
 import { CartResponseDto } from '../dtos/cart.dto';
 import AppDataSource from '../../../config/ormconfig';
-import { ProductVariant } from '../../../entities/ProductVariant'; // Adjust the path as needed
+import { ProductVariant } from '../../productVariants/entities/productVariants.entity';
 
 export class CartService {
   private cartRepository: Repository<Cart>;
@@ -156,7 +156,7 @@ export class CartService {
 
     // Apply any discounts if they exist
     if (cart.discount) {
-      total -= (cart.discount.percentage / 100) * total; // Apply discount
+      total -= (cart.discount / 100) * total; // Apply discount
     }
 
     return total;

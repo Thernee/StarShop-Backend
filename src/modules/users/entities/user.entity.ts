@@ -3,8 +3,8 @@ import { Order } from '../../orders/entities/order.entity';
 
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   email: string;
@@ -15,6 +15,12 @@ export class User {
   @Column()
   name: string;
 
+  @Column()
+  walletAddress: string;
+
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
+
+  @OneToMany('UserRole', (userRole: any) => userRole.user)
+  userRoles: any[];
 }
