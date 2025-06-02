@@ -10,6 +10,8 @@ import {
 import { CouponType } from '../dto/coupon.dto';
 import { CouponUsage } from './coupon-usage.entity';
 
+export { CouponUsage };
+
 @Entity('coupons')
 export class Coupon {
   @PrimaryGeneratedColumn('uuid')

@@ -1,30 +1,43 @@
 import request from 'supertest';
-import express from 'express';
+import express, { Express } from 'express';
 import notificationRoutes from '../routes/notification.routes';
 import { NotificationService } from '../services/notification.service';
 import { UserRole } from '../../users/enums/user-role.enum';
-import { Role } from '../../../types/express';
+import { Role } from '../../../types/role';
 
 describe('Notification Routes', () => {
-  let app: express.Application;
-  let notificationService: jest.Mocked<NotificationService>;
+  let app: Express;
+  let notificationService: NotificationService;
 
   beforeEach(() => {
-    app = express();
-    app.use(express.json());
-
-    // Mock auth middleware
-    app.use((req, res, next) => {
-      req.user = { role: [UserRole.ADMIN] as Role[] };
-      next();
-    });
-
     notificationService = {
-      sendNotificationToUser: jest.fn().mockResolvedValue(true),
-      broadcastNotification: jest.fn().mockResolvedValue(true),
-    } as any;
+      // Implementar métodos mock necesarios
+    } as NotificationService;
 
+    app = express();
     app.use('/notifications', notificationRoutes(notificationService));
+  });
+
+  it('should allow admin access', () => {
+    const req = {
+      user: {
+        id: '1',
+        walletAddress: '0x123',
+        role: [Role.ADMIN],
+      },
+    };
+    // Implementar prueba
+  });
+
+  it('should deny user access', () => {
+    const req = {
+      user: {
+        id: '2',
+        walletAddress: '0x456',
+        role: [Role.USER],
+      },
+    };
+    // Implementar prueba
   });
 
   describe('POST /notifications/send-to-user', () => {

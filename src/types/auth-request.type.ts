@@ -1,18 +1,26 @@
 import { Request } from 'express';
-import { UserRole } from '../modules/users/enums/user-role.enum';
+import { Role } from './role';
 
 export interface AppUser {
   id: string;
   walletAddress: string;
   name?: string;
   email?: string;
-  role: UserRole[];
+  role: Role[];
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-export interface AuthenticatedRequest extends Omit<Request, 'user'> {
-  user?: AppUser;
+export interface AuthenticatedRequest extends Request {
+  user: {
+    id: string | number;
+    walletAddress: string;
+    name?: string;
+    email?: string;
+    role: Role[];
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
   fileProvider?: 'cloudinary' | 's3';
   fileType?: string;
 }
