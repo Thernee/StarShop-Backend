@@ -3,41 +3,20 @@ import express, { Express } from 'express';
 import notificationRoutes from '../routes/notification.routes';
 import { NotificationService } from '../services/notification.service';
 import { UserRole } from '../../users/enums/user-role.enum';
-import { Role } from '../../../types/role';
 
 describe('Notification Routes', () => {
   let app: Express;
-  let notificationService: NotificationService;
+  let notificationService: jest.Mocked<NotificationService>;
 
   beforeEach(() => {
     notificationService = {
-      // Implementar métodos mock necesarios
-    } as NotificationService;
+      sendNotificationToUser: jest.fn().mockResolvedValue(true),
+      broadcastNotification: jest.fn().mockResolvedValue(true),
+    } as unknown as jest.Mocked<NotificationService>;
 
     app = express();
-    app.use('/notifications', notificationRoutes(notificationService));
-  });
-
-  it('should allow admin access', () => {
-    const req = {
-      user: {
-        id: '1',
-        walletAddress: '0x123',
-        role: [Role.ADMIN],
-      },
-    };
-    // Implementar prueba
-  });
-
-  it('should deny user access', () => {
-    const req = {
-      user: {
-        id: '2',
-        walletAddress: '0x456',
-        role: [Role.USER],
-      },
-    };
-    // Implementar prueba
+    app.use(express.json());
+    app.use('/notifications', notificationRoutes);
   });
 
   describe('POST /notifications/send-to-user', () => {
@@ -49,7 +28,10 @@ describe('Notification Routes', () => {
         type: 'info',
       };
 
-      const response = await request(app).post('/notifications/send-to-user').send(notification);
+      const response = await request(app)
+        .post('/notifications/send-to-user')
+        .set('Authorization', 'Bearer mock-token')
+        .send(notification);
 
       expect(response.status).toBe(200);
       expect(notificationService.sendNotificationToUser).toHaveBeenCalledWith(notification);
@@ -63,6 +45,7 @@ describe('Notification Routes', () => {
 
       const response = await request(app)
         .post('/notifications/send-to-user')
+        .set('Authorization', 'Bearer mock-token')
         .send(invalidNotification);
 
       expect(response.status).toBe(400);
@@ -77,7 +60,10 @@ describe('Notification Routes', () => {
         type: 'info',
       };
 
-      const response = await request(app).post('/notifications/broadcast').send(notification);
+      const response = await request(app)
+        .post('/notifications/broadcast')
+        .set('Authorization', 'Bearer mock-token')
+        .send(notification);
 
       expect(response.status).toBe(200);
       expect(notificationService.broadcastNotification).toHaveBeenCalledWith(notification);
@@ -90,6 +76,7 @@ describe('Notification Routes', () => {
 
       const response = await request(app)
         .post('/notifications/broadcast')
+        .set('Authorization', 'Bearer mock-token')
         .send(invalidNotification);
 
       expect(response.status).toBe(400);
@@ -98,14 +85,17 @@ describe('Notification Routes', () => {
 
   describe('Role-based access control', () => {
     beforeEach(() => {
-      // Override auth middleware to return non-admin user
       app = express();
       app.use(express.json());
       app.use((req, res, next) => {
-        req.user = { role: [UserRole.USER] as Role[] };
+        req.user = {
+          id: '1',
+          walletAddress: '0x123',
+          role: [UserRole.USER],
+        };
         next();
       });
-      app.use('/notifications', notificationRoutes(notificationService));
+      app.use('/notifications', notificationRoutes);
     });
 
     it('should return 403 when non-admin tries to send notification', async () => {
@@ -116,7 +106,10 @@ describe('Notification Routes', () => {
         type: 'info',
       };
 
-      const response = await request(app).post('/notifications/send-to-user').send(notification);
+      const response = await request(app)
+        .post('/notifications/send-to-user')
+        .set('Authorization', 'Bearer mock-token')
+        .send(notification);
 
       expect(response.status).toBe(403);
     });
@@ -128,7 +121,10 @@ describe('Notification Routes', () => {
         type: 'info',
       };
 
-      const response = await request(app).post('/notifications/broadcast').send(notification);
+      const response = await request(app)
+        .post('/notifications/broadcast')
+        .set('Authorization', 'Bearer mock-token')
+        .send(notification);
 
       expect(response.status).toBe(403);
     });

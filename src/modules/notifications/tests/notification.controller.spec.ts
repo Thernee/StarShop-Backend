@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationController } from '../controllers/notification.controller';
 import { NotificationService } from '../services/notification.service';
-import { NotificationDto, UserNotificationDto } from '../dto/notification.dto';
+// import { NotificationDto, UserNotificationDto } from '../dto/notification.dto';
 import { UserRole } from '../../users/enums/user-role.enum';
-import { AuthenticatedRequest } from '../../../types/auth-request.type';
+import { AuthenticatedRequest } from '../../shared/types/auth-request.type';
 import { Response } from 'express';
 
 describe('NotificationController', () => {

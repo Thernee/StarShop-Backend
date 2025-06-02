@@ -3,8 +3,9 @@ import { Review } from '../entities/review.entity';
 import AppDataSource from '../../../config/ormconfig';
 import { NotFoundError, BadRequestError } from '../../../utils/errors';
 import { ProductReviewsResponseDTO, ReviewResponseDTO } from '../dto/review.dto';
-import { ProductService } from '../../../services/product.service';
-import { UserService } from '../../../services/User.service';
+import { ProductService } from '../../products/services/product.service';
+import { UserService } from '../../users/services/user.service';
+import { User } from '../../users/entities/user.entity';
 
 export class ReviewService {
   private repository: Repository<Review>;
@@ -14,7 +15,7 @@ export class ReviewService {
   constructor() {
     this.repository = AppDataSource.getRepository(Review);
     this.productService = new ProductService();
-    this.userService = new UserService(AppDataSource);
+    this.userService = new UserService(AppDataSource.getRepository(User));
   }
 
   async createReview(

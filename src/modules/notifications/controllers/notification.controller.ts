@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { NotificationService } from '../services/notification.service';
 import { NotificationDto, UserNotificationDto } from '../dto/notification.dto';
 import { UserRole } from '../../users/enums/user-role.enum';
-import { AuthenticatedRequest } from '../../../types/auth-request.type';
+import { AuthenticatedRequest } from '../../shared/types/auth-request.type';
 
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
@@ -17,7 +17,7 @@ export class NotificationController {
     return userRole === UserRole.ADMIN;
   }
 
-  async sendToUser(req: AuthenticatedRequest, res: Response) {
+  async sendToUser(req: AuthenticatedRequest, res: Response): Promise<Response> {
     try {
       if (!this.isAdmin(req)) {
         return res.status(403).json({
@@ -40,7 +40,7 @@ export class NotificationController {
     }
   }
 
-  async broadcast(req: AuthenticatedRequest, res: Response) {
+  async broadcast(req: AuthenticatedRequest, res: Response): Promise<Response> {
     try {
       if (!this.isAdmin(req)) {
         return res.status(403).json({

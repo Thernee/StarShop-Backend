@@ -3,7 +3,7 @@ import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 
 export const validateRequest = (dtoClass: any) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const dtoObject = plainToClass(dtoClass, req.body);
     const errors = await validate(dtoObject);
 
@@ -13,15 +13,17 @@ export const validateRequest = (dtoClass: any) => {
         constraints: error.constraints,
       }));
 
-      return res.status(400).json({
+      res.status(400).json({
         status: 'error',
         message: 'Validation failed',
         errors: errorMessages,
       });
+
+      return; // ✅ Solo return vacío
     }
 
     req.body = dtoObject;
-    next();
+    next(); // ✅ Deja continuar la cadena de middleware
   };
 };
 
