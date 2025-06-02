@@ -7,7 +7,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../../entities/User';
-import { Product } from '../../../entities/Product'; // adjust based on your path
+import { Product } from '../../products/entities/product.entity';
 
 @Entity('wishlist')
 @Unique(['user', 'product'])
