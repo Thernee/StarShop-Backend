@@ -6,8 +6,8 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { User } from '../../../entities/User';
-import { Product } from '../../../entities/Product'; // adjust based on your path
+import { User } from '../../users/entities/user.entity';
+import { Product } from '../../products/entities/product.entity';
 
 @Entity('wishlist')
 @Unique(['user', 'product'])

@@ -1,9 +1,14 @@
 import { Request } from 'express';
+import { Role } from '../../../../types/role';
 
 export interface AuthRequest extends Request {
   user: {
-    id: string;
+    id: string | number;
+    walletAddress: string;
+    name?: string;
     email?: string;
-    roles?: string[];
+    role: Role[];
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 }

@@ -2,10 +2,11 @@ import { Controller, Post, Delete, Get, Param, UseGuards, Req, HttpCode } from '
 import { ParsedQs } from 'qs';
 import { RequestHandler } from 'express';
 import { WishlistService } from '../service/wishlist.service';
-import { AuthGuard } from '../common/guard/auth-guard';
+import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { AuthRequest } from '../common/types/auth-request.type';
+import { Wishlist } from '../entitities/wishlist.entity';
 
-@UseGuards(AuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('wishlist')
 export class WishlistController {
   static addToWishlist: RequestHandler<{ productId: string }, ParsedQs, Record<string, unknown>>;
@@ -22,7 +23,7 @@ export class WishlistController {
     @Param('productId') productId: string,
     @Req() req: AuthRequest
   ): Promise<{ message: string }> {
-    const userId = req.user.id;
+    const userId = String(req.user.id);
     await this.wishlistService.addToWishlist(userId, productId);
     return { message: 'Product added to wishlist' };
   }
@@ -33,13 +34,13 @@ export class WishlistController {
     @Param('productId') productId: string,
     @Req() req: AuthRequest
   ): Promise<void> {
-    const userId = req.user.id;
+    const userId = String(req.user.id);
     await this.wishlistService.removeFromWishlist(userId, productId);
   }
 
   @Get()
-  async getWishlist(@Req() req: AuthRequest): Promise<{ wishlist: any[] }> {
-    const userId = req.user.id;
+  async getWishlist(@Req() req: AuthRequest): Promise<{ wishlist: Wishlist[] }> {
+    const userId = String(req.user.id);
     const wishlist = await this.wishlistService.getWishlist(userId);
     return { wishlist };
   }

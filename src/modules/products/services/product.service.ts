@@ -2,6 +2,8 @@ import { Repository } from 'typeorm';
 import { Product } from '../entities/product.entity';
 import { ProductType } from '../../productTypes/entities/productTypes.entity';
 import AppDataSource from '../../../config/ormconfig';
+import { AppDataSource as DatabaseAppDataSource } from '../../../config/database';
+import { NotFoundError } from '../../../utils/errors';
 
 export interface ProductFilters {
   category?: number;
@@ -13,11 +15,38 @@ export interface ProductFilters {
 
 export type SortBy = 'price_asc' | 'price_desc' | 'newest' | 'popular';
 
+interface GetAllProductsOptions {
+  page: number;
+  limit: number;
+  search?: string;
+  category?: string;
+  sort?: string;
+}
+
+interface CreateProductData {
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  images?: string[];
+  sellerId: number;
+}
+
+interface UpdateProductData {
+  name?: string;
+  description?: string;
+  price?: number;
+  category?: string;
+  images?: string[];
+}
+
 export class ProductService {
   private repository: Repository<Product>;
+  private productRepository: Repository<Product>;
 
   constructor() {
     this.repository = AppDataSource.getRepository(Product);
+    this.productRepository = DatabaseAppDataSource.getRepository(Product);
   }
 
   async create(data: Partial<Product>, productTypeId: number): Promise<Product | null> {
@@ -118,5 +147,59 @@ export class ProductService {
   async delete(id: number): Promise<boolean> {
     const result = await this.repository.delete(id);
     return result.affected === 1;
+  }
+
+  async getAllProducts(
+    options: GetAllProductsOptions
+  ): Promise<{ products: Product[]; total: number }> {
+    const { page, limit, search, category, sort } = options;
+    const skip = (page - 1) * limit;
+
+    const queryBuilder = this.productRepository.createQueryBuilder('product');
+
+    if (search) {
+      queryBuilder.where('product.name ILIKE :search OR product.description ILIKE :search', {
+        search: `%${search}%`,
+      });
+    }
+
+    if (category) {
+      queryBuilder.andWhere('product.category = :category', { category });
+    }
+
+    if (sort) {
+      const [field, order] = sort.split(':');
+      queryBuilder.orderBy(`product.${field}`, order.toUpperCase() as 'ASC' | 'DESC');
+    } else {
+      queryBuilder.orderBy('product.createdAt', 'DESC');
+    }
+
+    const [products, total] = await queryBuilder.skip(skip).take(limit).getManyAndCount();
+
+    return { products, total };
+  }
+
+  async getProductById(id: number): Promise<Product> {
+    const product = await this.productRepository.findOne({ where: { id } });
+    if (!product) {
+      throw new NotFoundError('Product not found');
+    }
+    return product;
+  }
+
+  async createProduct(data: CreateProductData): Promise<Product> {
+    const product = this.productRepository.create(data);
+    return this.productRepository.save(product);
+  }
+
+  async updateProduct(id: number, data: UpdateProductData): Promise<Product> {
+    const product = await this.getProductById(id);
+    Object.assign(product, data);
+    return this.productRepository.save(product);
+  }
+
+  async deleteProduct(id: number): Promise<void> {
+    const product = await this.getProductById(id);
+    await this.productRepository.remove(product);
   }
 }

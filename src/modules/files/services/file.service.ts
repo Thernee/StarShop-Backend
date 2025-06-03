@@ -18,7 +18,7 @@ export class FileService {
    */
   async uploadFile(
     fileData: Express.Multer.File,
-    userId: number,
+    userId: string | number,
     provider: 'cloudinary' | 's3',
     fileType: FileType
   ): Promise<File> {
@@ -38,6 +38,8 @@ export class FileService {
       providerPublicId = s3File.key;
     }
 
+    const userIdStr = userId.toString();
+
     const createFileDto: CreateFileDto = {
       url,
       type: fileType,
@@ -46,7 +48,7 @@ export class FileService {
       size: fileData.size,
       providerType: provider,
       providerPublicId,
-      uploadedById: userId,
+      uploadedById: userIdStr,
     };
 
     const file = this.fileRepository.create(createFileDto);
@@ -66,9 +68,10 @@ export class FileService {
   /**
    * Get files uploaded by a specific user
    */
-  async getUserFiles(userId: number): Promise<File[]> {
+  async getUserFiles(userId: string | number): Promise<File[]> {
+    const userIdStr = userId.toString();
     return this.fileRepository.find({
-      where: { uploadedById: userId },
+      where: { uploadedById: userIdStr },
       order: { uploadedAt: 'DESC' },
     });
   }
@@ -76,9 +79,10 @@ export class FileService {
   /**
    * Delete a file
    */
-  async deleteFile(id: string, userId: number): Promise<boolean> {
+  async deleteFile(fileId: string, userId: string | number): Promise<boolean> {
+    const userIdStr = userId.toString();
     const file = await this.fileRepository.findOne({
-      where: { id, uploadedById: userId },
+      where: { id: fileId, uploadedById: userIdStr },
     });
 
     if (!file) {
@@ -105,7 +109,7 @@ export class FileService {
   /**
    * Count user files
    */
-  async countUserFiles(userId: number): Promise<number> {
+  async countUserFiles(userId: string): Promise<number> {
     return this.fileRepository.count({
       where: { uploadedById: userId },
     });

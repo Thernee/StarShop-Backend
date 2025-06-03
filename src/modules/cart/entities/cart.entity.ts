@@ -8,7 +8,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { CartItem } from './cart-item.entity';
-import { User } from '../../../entities/User';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('carts')
 export class Cart {
@@ -30,6 +30,10 @@ export class Cart {
 
   @OneToMany(() => CartItem, (cartItem) => cartItem.cart, { cascade: true })
   items: CartItem[];
-  discount: any;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  discount: number;
+
+  @Column({ name: 'discounted_total', type: 'decimal', precision: 10, scale: 2, nullable: true })
   discountedTotal: number;
 }

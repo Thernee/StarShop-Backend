@@ -1,20 +1,16 @@
-import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app.module';
+import express from 'express';
+import authRoutes from './modules/auth/routes/auth.routes';
+import errorHandler from './modules/shared/middleware/error.middleware';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+const app = express();
+const port = process.env.PORT || 3000;
 
-  const config = new DocumentBuilder()
-    .setTitle('StarShop API')
-    .setDescription('The StarShop API documentation')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
+app.use(express.json());
+app.use('/api/v1/auth', authRoutes);
+app.use((err: any, req: express.Request, res: express.Response) => {
+  errorHandler(err, req, res);
+});
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
-
-  await app.listen(3000);
-}
-bootstrap();
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});

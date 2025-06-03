@@ -1,11 +1,10 @@
 import { FileController } from '../controllers/file.controller';
 import { FileService } from '../services/file.service';
-import { AuthenticatedRequest } from '../../../middleware/auth.middleware';
+import { AuthenticatedRequest } from '../../../../src/types/auth-request.type';
 import { Response } from 'express';
 import { File, FileType } from '../entities/file.entity';
-
-// Mock FileService
-jest.mock('../services/file.service');
+import { Role } from '@/types/role';
+import { User } from '../../users/entities/user.entity';
 
 describe('FileController', () => {
   let fileController: FileController;
@@ -21,7 +20,7 @@ describe('FileController', () => {
     fileService = new FileService() as jest.Mocked<FileService>;
 
     fileController = new FileController();
-    (fileController as any).fileService = fileService;
+    (fileController as unknown as { fileService: FileService }).fileService = fileService;
 
     responseObj = {
       status: jest.fn().mockReturnThis(),
@@ -32,11 +31,9 @@ describe('FileController', () => {
     // Setup basic mock request
     mockRequest = {
       user: {
-        id: 1,
+        id: 'user-uuid',
         walletAddress: '0x123',
-        role: [
-          { name: 'buyer', id: 1, userRoles: [], createdAt: new Date(), updatedAt: new Date() },
-        ],
+        role: [Role.USER],
       },
       fileProvider: 'cloudinary',
       fileType: FileType.IMAGE,
@@ -87,6 +84,18 @@ describe('FileController', () => {
 
       mockRequest.file = mockFile;
 
+      const mockUser = {
+        id: 1,
+        walletAddress: '0x123',
+        role: [Role.USER],
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'hashed_password',
+        orders: [],
+        userRoles: [],
+        notifications: [],
+      } as unknown as User;
+
       const uploadedFile = {
         id: 'file-uuid',
         url: 'https://example.com/test.jpg',
@@ -96,8 +105,9 @@ describe('FileController', () => {
         size: 1024,
         providerType: 'cloudinary',
         providerPublicId: 'test-123',
-        uploadedById: 1,
+        uploadedById: '1',
         uploadedAt: new Date(),
+        uploadedBy: mockUser,
       } as File;
 
       fileService.uploadFile.mockResolvedValue(uploadedFile);
@@ -109,7 +119,7 @@ describe('FileController', () => {
 
       expect(fileService.uploadFile).toHaveBeenCalledWith(
         mockFile,
-        1,
+        'user-uuid',
         'cloudinary',
         FileType.IMAGE
       );
@@ -162,17 +172,45 @@ describe('FileController', () => {
           id: 'file-uuid-1',
           url: 'https://example.com/test1.jpg',
           type: FileType.IMAGE,
-          uploadedById: 1,
+          filename: 'test1.jpg',
+          mimetype: 'image/jpeg',
+          size: 1024,
+          providerType: 'cloudinary',
+          providerPublicId: 'test-123',
+          uploadedById: '1',
           uploadedAt: new Date(),
+          uploadedBy: {
+            id: 1,
+            walletAddress: '0x123',
+            name: 'Test User 1',
+            email: 'test1@example.com',
+            password: 'hashed_password',
+            orders: [],
+            userRoles: [],
+          },
         },
         {
           id: 'file-uuid-2',
-          url: 'https://example.com/test2.pdf',
-          type: FileType.DOCUMENT,
-          uploadedById: 1,
+          url: 'https://example.com/test2.png',
+          type: FileType.IMAGE,
+          filename: 'test2.png',
+          mimetype: 'image/png',
+          size: 2048,
+          providerType: 'cloudinary',
+          providerPublicId: 'test-456',
+          uploadedById: '2',
           uploadedAt: new Date(),
+          uploadedBy: {
+            id: 2,
+            walletAddress: '0x456',
+            name: 'Test User 2',
+            email: 'test2@example.com',
+            password: 'hashed_password',
+            orders: [],
+            userRoles: [],
+          },
         },
-      ] as File[];
+      ] as unknown as File[];
 
       fileService.getUserFiles.mockResolvedValue(mockFiles);
 
@@ -181,7 +219,7 @@ describe('FileController', () => {
         mockResponse as Response
       );
 
-      expect(fileService.getUserFiles).toHaveBeenCalledWith(1);
+      expect(fileService.getUserFiles).toHaveBeenCalledWith('user-uuid');
 
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -213,11 +251,25 @@ describe('FileController', () => {
 
       const mockFile = {
         id: 'file-uuid',
-        url: 'https://example.com/test.jpg',
+        url: 'https://example.com/file.jpg',
         type: FileType.IMAGE,
-        uploadedById: 1,
+        filename: 'test.jpg',
+        mimetype: 'image/jpeg',
+        size: 1024,
+        providerType: 'cloudinary',
+        providerPublicId: 'public-id',
+        uploadedById: '1',
         uploadedAt: new Date(),
-      } as File;
+        uploadedBy: {
+          id: 1,
+          walletAddress: '0x123',
+          name: 'Test User',
+          email: 'test@example.com',
+          password: 'hashed_password',
+          orders: [],
+          userRoles: [],
+        },
+      } as unknown as File;
 
       fileService.getFileById.mockResolvedValue(mockFile);
 
@@ -298,7 +350,7 @@ describe('FileController', () => {
         mockResponse as Response
       );
 
-      expect(fileService.deleteFile).toHaveBeenCalledWith('file-uuid', 1);
+      expect(fileService.deleteFile).toHaveBeenCalledWith('file-uuid', 'user-uuid');
 
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -369,17 +421,45 @@ describe('FileController', () => {
           id: 'file-uuid-1',
           url: 'https://example.com/test1.jpg',
           type: FileType.IMAGE,
-          uploadedById: 1,
+          filename: 'test1.jpg',
+          mimetype: 'image/jpeg',
+          size: 1024,
+          providerType: 'cloudinary',
+          providerPublicId: 'test-123',
+          uploadedById: '1',
           uploadedAt: new Date(),
+          uploadedBy: {
+            id: 1,
+            walletAddress: '0x123',
+            name: 'Test User 1',
+            email: 'test1@example.com',
+            password: 'hashed_password',
+            orders: [],
+            userRoles: [],
+          },
         },
         {
           id: 'file-uuid-2',
           url: 'https://example.com/test2.png',
           type: FileType.IMAGE,
-          uploadedById: 2,
+          filename: 'test2.png',
+          mimetype: 'image/png',
+          size: 2048,
+          providerType: 'cloudinary',
+          providerPublicId: 'test-456',
+          uploadedById: '2',
           uploadedAt: new Date(),
+          uploadedBy: {
+            id: 2,
+            walletAddress: '0x456',
+            name: 'Test User 2',
+            email: 'test2@example.com',
+            password: 'hashed_password',
+            orders: [],
+            userRoles: [],
+          },
         },
-      ] as File[];
+      ] as unknown as File[];
 
       fileService.getFilesByType.mockResolvedValue(mockFiles);
 

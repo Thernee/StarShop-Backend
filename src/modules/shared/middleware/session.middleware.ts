@@ -1,9 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import { SessionService } from '../services/SessionService';
-import AppDataSource from '../config/ormconfig';
+import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException } from '@nestjs/common';
+import AppDataSource from '../../../config/ormconfig';
+import { User } from '../../users/entities/user.entity';
+import { Role } from '../../../types/role';
 
-const sessionService = new SessionService(AppDataSource);
+const jwtService = new JwtService({ secret: process.env.JWT_SECRET });
+const userRepository = AppDataSource.getRepository(User);
 
 export const sessionMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -17,16 +20,25 @@ export const sessionMiddleware = async (req: Request, res: Response, next: NextF
       throw new UnauthorizedException('No token provided');
     }
 
-    const session = await sessionService.validateSession(token);
-    if (!session) {
-      throw new UnauthorizedException('Invalid or expired session');
+    const decoded = jwtService.verify(token);
+    if (!decoded) {
+      throw new UnauthorizedException('Invalid or expired token');
+    }
+
+    const user = await userRepository.findOne({
+      where: { id: decoded.sub },
+      relations: ['userRoles', 'userRoles.role'],
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
     }
 
     // Attach user to request
     req.user = {
-      id: session.user.id,
-      walletAddress: session.user.walletAddress,
-      role: [session.user.userRoles[0].role],
+      id: user.id,
+      walletAddress: user.walletAddress,
+      role: user.userRoles.map((ur) => ur.role.name as Role),
     };
 
     next();

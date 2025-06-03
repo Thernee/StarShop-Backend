@@ -12,9 +12,7 @@
 //     fileType?: string;
 //   }
 // }
-
-import { Request } from 'express';
-import { Role } from '../modules/auth';
+import { Role } from '../types/role';
 
 declare module 'express-serve-static-core' {
   interface Request {
@@ -30,4 +28,22 @@ declare module 'express-serve-static-core' {
     fileProvider?: 'cloudinary' | 's3';
     fileType?: string;
   }
+}
+
+declare global {
+  namespace Express {
+    interface User {
+      id: string;
+      walletAddress: string;
+      name?: string;
+      email?: string;
+      role: Role[];
+      createdAt?: Date;
+      updatedAt?: Date;
+    }
+  }
+}
+
+export interface AuthenticatedRequest extends Express.Request {
+  user: Express.User;
 }

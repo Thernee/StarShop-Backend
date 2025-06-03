@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { BadRequestError } from '../../../utils/errors';
-import { AuthenticatedRequest } from '../../../middleware/auth.middleware';
+import { AuthenticatedRequest } from '../../shared/types/auth-request.type';
 
 /**
  * Middleware to validate if a user can review a product

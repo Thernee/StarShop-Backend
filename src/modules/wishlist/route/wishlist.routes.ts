@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { AuthRequest } from '../common/types/auth-request.type';
 import AppDataSource from '../../../config/ormconfig';
 import { Wishlist } from '../entitities/wishlist.entity';
-import { Product } from '../../../entities/Product';
+import { Product } from '../../products/entities/product.entity';
 import { WishlistService } from '../service/wishlist.service';
 import { WishlistController } from '../controller/wishlist.controller';
 

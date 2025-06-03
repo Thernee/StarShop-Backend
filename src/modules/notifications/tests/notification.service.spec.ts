@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationService } from '../services/notification.service';
 import { NotificationDto, UserNotificationDto } from '../dto/notification.dto';
 import { ConfigService } from '@nestjs/config';
-import Pusher from 'pusher';
+// import Pusher from 'pusher';
 
 // Create mock Pusher instance
 const mockTrigger = jest.fn().mockResolvedValue(undefined);

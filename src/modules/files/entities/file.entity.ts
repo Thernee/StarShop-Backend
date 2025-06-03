@@ -6,12 +6,12 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { User } from '../../../entities/User';
+import { User } from '../../../modules/users/entities/user.entity';
 
 export enum FileType {
-  IMAGE = 'image',
-  DOCUMENT = 'document',
-  OTHER = 'other',
+  IMAGE = 'IMAGE',
+  DOCUMENT = 'DOCUMENT',
+  OTHER = 'OTHER',
 }
 
 @Entity('files')
@@ -49,7 +49,7 @@ export class File {
   uploadedBy: User;
 
   @Column({ name: 'uploaded_by' })
-  uploadedById: number;
+  uploadedById: string;
 
   @CreateDateColumn({ name: 'uploaded_at' })
   uploadedAt: Date;

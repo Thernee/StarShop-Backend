@@ -3,7 +3,7 @@ import { WishlistService } from './wishlist.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Wishlist } from '../entitities/wishlist.entity';
 import { Repository } from 'typeorm';
-import { Product } from '../../../entities/Product';
+import { Product } from '../../products/entities/product.entity';
 import { NotFoundException, ConflictException } from '@nestjs/common';
 
 describe('WishlistService', () => {

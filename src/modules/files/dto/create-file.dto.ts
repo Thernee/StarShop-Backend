@@ -20,5 +20,5 @@ export class CreateFileDto {
   size?: number;
   providerType: 'cloudinary' | 's3';
   providerPublicId?: string;
-  uploadedById: number;
+  uploadedById: string;
 }

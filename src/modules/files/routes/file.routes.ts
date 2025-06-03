@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import { FileController } from '../controllers/file.controller';
 import { uploadFile, validateFileExists } from '../middlewares/file-upload.middleware';
-// import { authMiddleware } from '../../auth/middleware/jwt-auth.middleware';
-import { authMiddleware } from '../../../middleware/auth.middleware';
+import { jwtAuthMiddleware } from '../../auth/middleware/jwt-auth.middleware';
 
 const router = Router();
 const fileController = new FileController();
@@ -14,7 +13,7 @@ const fileController = new FileController();
  */
 router.post(
   '/upload',
-  authMiddleware,
+  jwtAuthMiddleware,
   uploadFile('cloudinary'),
   validateFileExists,
   fileController.uploadFile.bind(fileController)
@@ -27,7 +26,7 @@ router.post(
  */
 router.post(
   '/upload/s3',
-  authMiddleware,
+  jwtAuthMiddleware,
   uploadFile('s3'),
   validateFileExists,
   fileController.uploadFile.bind(fileController)
@@ -38,7 +37,7 @@ router.post(
  * @desc    Get files uploaded by the authenticated user
  * @access  Private
  */
-router.get('/my', authMiddleware, fileController.getUserFiles.bind(fileController));
+router.get('/my', jwtAuthMiddleware, fileController.getUserFiles.bind(fileController));
 
 /**
  * @route   GET /files/:id
@@ -59,6 +58,6 @@ router.get('/type/:type', fileController.getFilesByType.bind(fileController));
  * @desc    Delete a file
  * @access  Private
  */
-router.delete('/:id', authMiddleware, fileController.deleteFile.bind(fileController));
+router.delete('/:id', jwtAuthMiddleware, fileController.deleteFile.bind(fileController));
 
 export default router;

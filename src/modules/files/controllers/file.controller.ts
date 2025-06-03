@@ -1,7 +1,8 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { FileService } from '../services/file.service';
 import { FileType } from '../entities/file.entity';
-import { AuthenticatedRequest } from '../../../middleware/auth.middleware';
+import { AuthenticatedRequest } from '../../../../src/types/auth-request.type';
+import { UploadFileDto } from '../dto/file.dto';
 
 export class FileController {
   private fileService: FileService;
@@ -31,10 +32,17 @@ export class FileController {
         return;
       }
 
-      const provider = req.fileProvider || 'cloudinary';
-      const fileType = (req.fileType as FileType) || FileType.OTHER;
+      const uploadDto: UploadFileDto = {
+        provider: req.fileProvider as 'cloudinary' | 's3',
+        fileType: req.fileType as FileType,
+      };
 
-      const file = await this.fileService.uploadFile(req.file, req.user.id, provider, fileType);
+      const file = await this.fileService.uploadFile(
+        req.file,
+        req.user.id,
+        uploadDto.provider || 'cloudinary',
+        uploadDto.fileType || FileType.OTHER
+      );
 
       res.status(201).json({
         status: 'success',

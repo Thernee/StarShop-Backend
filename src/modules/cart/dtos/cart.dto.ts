@@ -1,4 +1,5 @@
-import { IsUUID, IsInt, Min } from 'class-validator';
+import { IsUUID, IsInt, Min, IsDate, IsOptional, IsNumber } from 'class-validator';
+import { Product } from '../../products/entities/product.entity';
 
 export class AddItemDto {
   @IsUUID()
@@ -15,15 +16,37 @@ export class RemoveItemDto {
 }
 
 export class CartItemResponseDto {
+  @IsUUID()
   id: string;
+
+  @IsUUID()
   productId: string;
+
+  @IsInt()
+  @Min(1)
   quantity: number;
-  product?: any;
+
+  @IsOptional()
+  product?: Product;
 }
 
 export class CartResponseDto {
+  @IsUUID()
   id: string;
+
+  @IsUUID()
   userId: string;
+
+  @IsDate()
   createdAt: Date;
+
+  @IsOptional()
+  @IsNumber()
+  discount?: number;
+
+  @IsOptional()
+  @IsNumber()
+  discountedTotal?: number;
+
   items: CartItemResponseDto[];
 }

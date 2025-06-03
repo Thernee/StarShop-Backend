@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Req } from '@nestjs/common';
 import { OrderService } from '../services/order.service';
 import { OrderDto } from '../dto/order.dto';
-import { AuthenticatedRequest } from '../../../middleware/auth.middleware';
+import { AuthenticatedRequest } from '../../shared/types/auth-request.type';
 
 @Controller('orders')
 export class OrderController {

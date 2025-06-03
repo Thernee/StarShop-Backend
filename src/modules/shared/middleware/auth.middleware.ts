@@ -2,8 +2,7 @@ import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/commo
 import { Request, Response, NextFunction } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { RoleService } from '../services/role.service';
-import { AuthService } from '../services/auth.service';
-import { Role } from '../modules/auth/entities/role.entity';
+import { Role } from '../../../types/role';
 
 /**
  * Interface for extending the Express Request type
@@ -15,7 +14,7 @@ export interface AuthenticatedRequest extends Request {
     walletAddress: string;
     name?: string;
     email?: string;
-    role: string[];
+    role: Role[];
     createdAt?: Date;
     updatedAt?: Date;
   };
@@ -30,7 +29,21 @@ export class AuthMiddleware implements NestMiddleware {
     private readonly roleService: RoleService
   ) {}
 
-  async use(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  public mapRoleToEnum(roleName: string): Role {
+    switch (roleName.toLowerCase()) {
+      case 'admin':
+        return Role.ADMIN;
+      case 'seller':
+        return Role.SELLER;
+      case 'buyer':
+      case 'user':
+        return Role.USER;
+      default:
+        return Role.USER;
+    }
+  }
+
+  async use(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const authHeader = req.headers.authorization;
       if (!authHeader) {
@@ -50,7 +63,7 @@ export class AuthMiddleware implements NestMiddleware {
       const userRoles = await this.roleService.getUserRoles(decoded.id);
       req.user = {
         ...decoded,
-        role: userRoles,
+        role: userRoles.map((role) => this.mapRoleToEnum(role)),
       };
 
       next();
@@ -65,13 +78,14 @@ export class AuthMiddleware implements NestMiddleware {
  * Checks if the authenticated user has the required role
  * Must be used after authMiddleware
  */
-export const requireRole = (roleName: 'buyer' | 'seller' | 'admin') => {
+export const requireRole = (
+  roleName: 'buyer' | 'seller' | 'admin'
+): ((req: AuthenticatedRequest, res: Response, next: NextFunction) => void) => {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    // Check if user exists and has the required role
-    if (!req.user || !req.user.role.some((role) => role.name === roleName)) {
+    const requiredRole = new AuthMiddleware(null, null).mapRoleToEnum(roleName);
+    if (!req.user || !req.user.role.includes(requiredRole)) {
       throw new ReferenceError('Insufficient permissions');
     }
-    // If role matches, continue to next middleware or route handler
     next();
   };
 };

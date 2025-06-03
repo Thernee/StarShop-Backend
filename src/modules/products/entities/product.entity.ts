@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { ProductType } from '../../productTypes/entities/productTypes.entity';
 import { ProductVariant } from '../../productVariants/entities/productVariants.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('products')
 export class Product {
@@ -27,6 +28,13 @@ export class Product {
 
   @OneToMany(() => ProductVariant, (variant) => variant.product)
   variants: ProductVariant[];
+
+  @Column({ name: 'seller_id' })
+  sellerId: number;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'seller_id' })
+  seller: User;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -7,8 +7,8 @@ import {
   JoinColumn,
   Unique,
 } from 'typeorm';
-import { User } from '../../../entities/User';
-import { Product } from '../../../entities/Product';
+import { User } from '../../users/entities/user.entity';
+import { Product } from '../../products/entities/product.entity';
 
 @Entity('reviews')
 @Unique(['userId', 'productId']) // Ensure one review per product per user

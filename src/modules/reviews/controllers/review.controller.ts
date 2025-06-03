@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { ReviewService } from '../services/review.service';
 import { CreateReviewDTO } from '../dto/review.dto';
 import { BadRequestError } from '../../../utils/errors';
-import { AuthenticatedRequest } from '../../../middleware/auth.middleware';
+import { AuthenticatedRequest } from '../../shared/types/auth-request.type';
 
 export class ReviewController {
   private reviewService: ReviewService;
@@ -13,7 +13,7 @@ export class ReviewController {
 
   async createReview(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.user.id;
+      const userId = Number(req.user.id);
       if (!userId) {
         throw new BadRequestError('User ID is required');
       }
@@ -78,7 +78,7 @@ export class ReviewController {
 
   async deleteReview(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.user.id;
+      const userId = Number(req.user.id);
       if (!userId) {
         throw new BadRequestError('User ID is required');
       }

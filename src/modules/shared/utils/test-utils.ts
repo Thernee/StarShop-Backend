@@ -1,6 +1,6 @@
-import AppDataSource from '../config/ormconfig';
+import AppDataSource from '../../../config/ormconfig';
 
-export async function setupTestDB() {
+export async function setupTestDB(): Promise<void> {
   console.log('process.env.NODE_ENV');
   console.log('Initializing database...');
   if (!AppDataSource.isInitialized) {
@@ -13,7 +13,7 @@ export async function setupTestDB() {
   console.log('Database synchronized.');
 }
 
-export async function teardownTestDB() {
+export async function teardownTestDB(): Promise<void> {
   console.log('Destroying database...');
   if (AppDataSource.isInitialized) {
     await AppDataSource.destroy();

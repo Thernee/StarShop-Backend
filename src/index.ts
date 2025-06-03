@@ -1,47 +1,33 @@
-import 'reflect-metadata';
 import express from 'express';
-import SwaggerUI from 'swagger-ui-express';
-import YAML from 'yamljs';
+import authRoutes from './modules/auth/routes/auth.routes.js';
+import errorHandler from './modules/shared/middleware/error.middleware.js';
 import AppDataSource from './config/ormconfig';
-import indexRoutes from './routes/index';
-
-// import { errorHandler } from './middleware/error.middleware';
-import wishlistRouter from './modules/wishlist/route/wishlist.routes';
-
-// import errorHandler from './middleware/error.middleware';
-import { NotFoundError } from './middleware/error.classes';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Load OpenAPI spec
-const swaggerDocument = YAML.load('./openapi.yaml');
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Use the index routes
-app.use('/api/v1', indexRoutes);
-
-// Use wishlist routes
-app.use('/api/v1/wishlist', wishlistRouter); // Integrate wishlist routes here
+// Use auth routes
+app.use('/api/v1/auth', authRoutes);
 
 // Swagger documentation route
-app.use('/docs', SwaggerUI.serve, SwaggerUI.setup(swaggerDocument));
-
-app.use('*', (req, res, next) => next(new NotFoundError()));
+app.get('/api-docs', (req, res) => {
+  res.send('API documentation will be available here');
+});
 
 // Register the global error-handling middleware
-// app.use(errorHandler);
+app.use((err: any, req: express.Request, res: express.Response) => {
+  errorHandler(err, req, res);
+});
 
 AppDataSource.initialize()
   .then(() => {
-    console.log('Data Source has been initialized!');
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+    console.log('Database connection established');
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
     });
   })
   .catch((error) => {
     console.error('Error during Data Source initialization:', error);
   });
-
-// app.use('/', router)

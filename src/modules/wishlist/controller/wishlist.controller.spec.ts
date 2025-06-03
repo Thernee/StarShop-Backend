@@ -1,15 +1,39 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WishlistController } from './wishlist.controller';
 import { WishlistService } from '../service/wishlist.service';
-import { AuthGuard } from '../common/guard/auth-guard';
+import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { ConflictException } from '@nestjs/common';
 import { Wishlist } from '../entitities/wishlist.entity';
 import { mockRequest } from '../common/mock/mock-request';
 import { AuthRequest } from '../common/types/auth-request.type';
+import { Role } from '@/types/role';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Product } from '../../products/entities/product.entity';
+import { JwtService } from '@nestjs/jwt';
 
 describe('WishlistController', () => {
   let controller: WishlistController;
   let service: WishlistService;
+
+  const mockWishlistRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+    find: jest.fn(),
+    delete: jest.fn(),
+    manager: {
+      findOneOrFail: jest.fn(),
+    },
+  };
+
+  const mockProductRepository = {
+    findOne: jest.fn(),
+  };
+
+  const mockJwtService = {
+    sign: jest.fn(),
+    verify: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -17,7 +41,19 @@ describe('WishlistController', () => {
       providers: [
         WishlistService,
         {
-          provide: AuthGuard,
+          provide: getRepositoryToken(Wishlist),
+          useValue: mockWishlistRepository,
+        },
+        {
+          provide: getRepositoryToken(Product),
+          useValue: mockProductRepository,
+        },
+        {
+          provide: JwtService,
+          useValue: mockJwtService,
+        },
+        {
+          provide: JwtAuthGuard,
           useValue: {
             canActivate: jest.fn().mockResolvedValue(true),
           },
@@ -33,7 +69,13 @@ describe('WishlistController', () => {
     it('should call the service method to add product', async () => {
       const userId = 'user-id';
       const productId = 'product-id';
-      const req = mockRequest({ user: { id: userId } }) as unknown as AuthRequest;
+      const req = mockRequest({
+        user: {
+          id: userId,
+          walletAddress: 'test-wallet',
+          role: [Role.USER],
+        },
+      }) as unknown as AuthRequest;
 
       jest.spyOn(service, 'addToWishlist').mockResolvedValueOnce(undefined);
 
@@ -44,7 +86,13 @@ describe('WishlistController', () => {
     it('should throw ConflictException when product is already in wishlist', async () => {
       const userId = 'user-id';
       const productId = 'product-id';
-      const req = mockRequest({ user: { id: userId } }) as unknown as AuthRequest;
+      const req = mockRequest({
+        user: {
+          id: userId,
+          walletAddress: 'test-wallet',
+          role: [Role.USER],
+        },
+      }) as unknown as AuthRequest;
 
       jest
         .spyOn(service, 'addToWishlist')
@@ -58,7 +106,13 @@ describe('WishlistController', () => {
     it('should call service method to remove product from wishlist', async () => {
       const userId = 'user-id';
       const productId = 'product-id';
-      const req = mockRequest({ user: { id: userId } }) as unknown as AuthRequest;
+      const req = mockRequest({
+        user: {
+          id: userId,
+          walletAddress: 'test-wallet',
+          role: [Role.USER],
+        },
+      }) as unknown as AuthRequest;
 
       jest.spyOn(service, 'removeFromWishlist').mockResolvedValueOnce(undefined);
 
@@ -70,7 +124,13 @@ describe('WishlistController', () => {
   describe('getWishlist', () => {
     it('should return the user wishlist', async () => {
       const userId = 'user-id';
-      const req = mockRequest({ user: { id: userId } }) as unknown as AuthRequest;
+      const req = mockRequest({
+        user: {
+          id: userId,
+          walletAddress: 'test-wallet',
+          role: [Role.USER],
+        },
+      }) as unknown as AuthRequest;
       const wishlistItems = [new Wishlist()];
 
       jest.spyOn(service, 'getWishlist').mockResolvedValueOnce(wishlistItems);
