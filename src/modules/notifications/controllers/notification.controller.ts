@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { NotificationService } from '../services/notification.service';
 import { NotificationDto, UserNotificationDto } from '../dto/notification.dto';
-import { UserRole } from '../../users/enums/user-role.enum';
+import { Role } from '../../../types/role';
 import { AuthenticatedRequest } from '../../shared/types/auth-request.type';
 
 export class NotificationController {
@@ -12,9 +12,9 @@ export class NotificationController {
 
     const userRole = req.user.role;
     if (Array.isArray(userRole)) {
-      return userRole.some((role) => role === UserRole.ADMIN);
+      return userRole.some((role) => role === Role.ADMIN);
     }
-    return userRole === UserRole.ADMIN;
+    return userRole === Role.ADMIN;
   }
 
   async sendToUser(req: AuthenticatedRequest, res: Response): Promise<Response> {

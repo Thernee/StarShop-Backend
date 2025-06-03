@@ -12,7 +12,7 @@ export class UserService {
 
   async getUserById(id: number): Promise<User> {
     return this.userRepository.findOne({
-      where: { id: id.toString() },
+      where: { id },
       relations: ['userRoles', 'userRoles.role'],
     });
   }

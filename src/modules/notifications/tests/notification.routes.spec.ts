@@ -2,7 +2,7 @@ import request from 'supertest';
 import express, { Express } from 'express';
 import notificationRoutes from '../routes/notification.routes';
 import { NotificationService } from '../services/notification.service';
-import { UserRole } from '../../users/enums/user-role.enum';
+import { Role } from '../../../types/role';
 
 describe('Notification Routes', () => {
   let app: Express;
@@ -91,7 +91,7 @@ describe('Notification Routes', () => {
         req.user = {
           id: '1',
           walletAddress: '0x123',
-          role: [UserRole.USER],
+          role: [Role.USER],
         };
         next();
       });

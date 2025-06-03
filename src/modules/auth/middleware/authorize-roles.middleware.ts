@@ -1,16 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
+import { Role } from '../../../types/role';
 
-type RoleName = 'buyer' | 'seller' | 'admin';
-
-export const authorizeRoles = (allowedRoles: RoleName[]) => {
+export const authorizeRoles = (allowedRoles: Role[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       if (!req.user) {
         throw new UnauthorizedException('User not authenticated');
       }
 
-      const userRoles = req.user.role as RoleName[];
+      const userRoles = req.user.role;
       const hasAllowedRole = userRoles.some((role) => allowedRoles.includes(role));
 
       if (!hasAllowedRole) {

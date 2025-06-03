@@ -41,17 +41,27 @@ export class RoleService {
     await this.roleRepository.delete(id);
   }
 
-  // async assignRoleToUser(userId: string, roleName: string): Promise<void> {
-  //   // Implementar lógica de asignación de rol
-  // }
+  async assignRoleToUser(userId: string, roleName: string): Promise<void> {
+    const role = await this.findByName(roleName as RoleName);
+    if (!role) {
+      throw new Error(`Role ${roleName} not found`);
+    }
+    await this.userRoleRepository.save({
+      userId: parseInt(userId),
+      roleId: role.id,
+    });
+  }
 
   async removeRoleFromUser(userId: number, roleId: number): Promise<void> {
     await this.userRoleRepository.delete({ userId, roleId });
   }
 
   async getUserRoles(userId: string): Promise<Role[]> {
-    // Implementar lógica de obtención de roles
-    return [];
+    const userRoles = await this.userRoleRepository.find({
+      where: { userId: parseInt(userId) },
+      relations: ['role'],
+    });
+    return userRoles.map((ur) => ur.role);
   }
 
   async hasRole(userId: number, roleName: RoleName): Promise<boolean> {

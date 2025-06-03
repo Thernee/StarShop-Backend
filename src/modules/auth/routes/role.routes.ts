@@ -6,6 +6,7 @@ import { authorizeRoles } from '../middleware/authorize-roles.middleware';
 import { Role } from '../entities/role.entity';
 import { UserRole } from '../entities/user-role.entity';
 import AppDataSource from '../../../config/ormconfig';
+import { Role as RoleEnum } from '../../../types/role';
 
 // Define proper middleware type that matches Express's expectations
 type ExpressMiddleware = (req: Request, res: Response, next: NextFunction) => void | Promise<void>;
@@ -23,7 +24,7 @@ router.use(jwtAuthMiddleware as unknown as ExpressMiddleware);
 // Assign role to user (admin only)
 router.post(
   '/assign-role',
-  authorizeRoles(['admin']) as unknown as ExpressMiddleware,
+  authorizeRoles([RoleEnum.ADMIN]) as unknown as ExpressMiddleware,
   roleController.assignRole.bind(roleController)
 );
 

@@ -1,11 +1,14 @@
 import { Request } from 'express';
-import { UserRole } from '../modules/users/enums/user-role.enum';
+import { Role } from '../../../types/role';
 
 export interface AuthenticatedRequest extends Request {
   user: {
     id: string | number;
-    role: UserRole | UserRole[];
-    walletAddress?: string;
+    walletAddress: string;
+    name?: string;
     email?: string;
+    role: Role[];
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 }

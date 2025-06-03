@@ -44,7 +44,7 @@ describe('NotificationController', () => {
           message: 'Test message',
           type: 'info',
         },
-      } as AuthenticatedRequest;
+      } as unknown as AuthenticatedRequest;
 
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -70,7 +70,7 @@ describe('NotificationController', () => {
           message: 'Test message',
           type: 'info',
         },
-      } as AuthenticatedRequest;
+      } as unknown as AuthenticatedRequest;
 
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -96,7 +96,7 @@ describe('NotificationController', () => {
           message: 'Test message',
           type: 'info',
         },
-      } as AuthenticatedRequest;
+      } as unknown as AuthenticatedRequest;
 
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -121,7 +121,7 @@ describe('NotificationController', () => {
           message: 'Test message',
           type: 'info',
         },
-      } as AuthenticatedRequest;
+      } as unknown as AuthenticatedRequest;
 
       const res = {
         status: jest.fn().mockReturnThis(),
