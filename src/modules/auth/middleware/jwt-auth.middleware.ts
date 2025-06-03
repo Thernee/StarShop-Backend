@@ -1,58 +1,50 @@
 import { Request, Response, NextFunction } from 'express';
-import { JwtService } from '@nestjs/jwt';
-import { UnauthorizedException } from '@nestjs/common';
+import { verify } from 'jsonwebtoken';
+import { config } from '../../../config';
+import { UnauthorizedError } from '../../../utils/errors';
+import { AppDataSource } from '../../../config/database';
 import { User } from '../../users/entities/user.entity';
-import AppDataSource from '../../../config/ormconfig';
+import { Role } from '../../../types/role';
 
 export const jwtAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      throw new UnauthorizedException('No authorization header');
+      throw new UnauthorizedError('No token provided');
     }
 
     const token = authHeader.split(' ')[1];
     if (!token) {
-      throw new UnauthorizedException('No token provided');
+      throw new UnauthorizedError('Invalid token format');
     }
 
-    const jwtService = new JwtService({
-      secret: process.env.JWT_SECRET || 'your-secret-key',
-    });
-
-    const decoded = jwtService.verify(token);
-    if (!decoded || !decoded.sub) {
-      throw new UnauthorizedException('Invalid token');
-    }
-
-    // Get user from database
+    const decoded = verify(token, config.jwtSecret) as { id: string; email: string };
     const userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOne({ where: { id: decoded.sub } });
+    const user = await userRepository.findOne({ where: { id: parseInt(decoded.id) } });
 
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedError('User not found');
     }
 
-    // Attach user to request
     req.user = {
       id: user.id,
-      walletAddress: user.email, // Using email as walletAddress temporarily
-      name: user.name,
       email: user.email,
-      role: user.userRoles[0].role.name,
+      walletAddress: user.walletAddress,
+      name: user.name,
+      role: user.userRoles.map((ur) => ur.role.name as Role),
     };
 
     next();
   } catch (error) {
-    if (error instanceof UnauthorizedException) {
+    if (error instanceof UnauthorizedError) {
       res.status(401).json({
         success: false,
         message: error.message,
       });
     } else {
-      res.status(500).json({
+      res.status(401).json({
         success: false,
-        message: 'Internal server error',
+        message: 'Invalid token',
       });
     }
   }

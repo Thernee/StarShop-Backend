@@ -1,88 +1,124 @@
 import { Response } from 'express';
-import { validate } from 'class-validator';
-import { plainToClass } from 'class-transformer';
-import { cartService } from '../services/cart.service';
-import { AddItemDto, RemoveItemDto } from '../dtos/cart.dto';
+import { CartService } from '../services/cart.service';
+import { BadRequestError } from '../../../utils/errors';
 import { AuthenticatedRequest } from '../../shared/types/auth-request.type';
 
 export class CartController {
+  constructor(private readonly cartService: CartService) {}
+
   async getCart(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const userId = req.user?.id.toString(); // Convert number to string for service
+      const userId = req.user?.id;
       if (!userId) {
-        res.status(401).json({ message: 'User not authenticated' });
-        return;
+        throw new BadRequestError('User not authenticated');
       }
-      const cart = await cartService.getCart(userId);
-      res.json(cart);
+
+      const cart = await this.cartService.getCart(String(userId));
+      res.status(200).json({
+        success: true,
+        data: cart,
+      });
     } catch (error) {
-      res.status(500).json({ message: 'Failed to retrieve cart', error: (error as Error).message });
+      res.status(error.status || 500).json({
+        success: false,
+        message: error.message,
+      });
     }
   }
 
   async addItem(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const userId = req.user?.id.toString(); // Convert number to string for service
+      const userId = req.user?.id;
       if (!userId) {
-        res.status(401).json({ message: 'User not authenticated' });
-        return;
-      }
-      const addItemDto = plainToClass(AddItemDto, req.body);
-
-      // Validate DTO
-      const errors = await validate(addItemDto);
-      if (errors.length > 0) {
-        res.status(400).json({ message: 'Validation failed', errors });
-        return;
+        throw new BadRequestError('User not authenticated');
       }
 
-      const cart = await cartService.addItem(userId, addItemDto.productId, addItemDto.quantity);
-      res.json(cart);
+      const { productId, quantity } = req.body;
+      if (!productId || !quantity) {
+        throw new BadRequestError('Product ID and quantity are required');
+      }
+
+      const cart = await this.cartService.addItem(
+        String(userId),
+        String(productId),
+        Number(quantity)
+      );
+      res.status(200).json({
+        success: true,
+        data: cart,
+      });
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: 'Failed to add item to cart', error: (error as Error).message });
+      res.status(error.status || 500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  async updateItem(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        throw new BadRequestError('User not authenticated');
+      }
+
+      const { id } = req.params;
+      const { quantity } = req.body;
+      if (!quantity) {
+        throw new BadRequestError('Quantity is required');
+      }
+
+      const cart = await this.cartService.updateItem(String(userId), id, Number(quantity));
+      res.status(200).json({
+        success: true,
+        data: cart,
+      });
+    } catch (error) {
+      res.status(error.status || 500).json({
+        success: false,
+        message: error.message,
+      });
     }
   }
 
   async removeItem(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const userId = req.user?.id.toString(); // Convert number to string for service
+      const userId = req.user?.id;
       if (!userId) {
-        res.status(401).json({ message: 'User not authenticated' });
-        return;
-      }
-      const removeItemDto = plainToClass(RemoveItemDto, req.body);
-
-      // Validate DTO
-      const errors = await validate(removeItemDto);
-      if (errors.length > 0) {
-        res.status(400).json({ message: 'Validation failed', errors });
-        return;
+        throw new BadRequestError('User not authenticated');
       }
 
-      const cart = await cartService.removeItem(userId, removeItemDto.productId);
-      res.json(cart);
+      const { id } = req.params;
+      const cart = await this.cartService.removeItem(String(userId), id);
+      res.status(200).json({
+        success: true,
+        data: cart,
+      });
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: 'Failed to remove item from cart', error: (error as Error).message });
+      res.status(error.status || 500).json({
+        success: false,
+        message: error.message,
+      });
     }
   }
 
   async clearCart(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const userId = req.user?.id.toString(); // Convert number to string for service
+      const userId = req.user?.id;
       if (!userId) {
-        res.status(401).json({ message: 'User not authenticated' });
-        return;
+        throw new BadRequestError('User not authenticated');
       }
-      const cart = await cartService.clearCart(userId);
-      res.json(cart);
+
+      await this.cartService.clearCart(String(userId));
+      res.status(200).json({
+        success: true,
+        message: 'Cart cleared successfully',
+      });
     } catch (error) {
-      res.status(500).json({ message: 'Failed to clear cart', error: (error as Error).message });
+      res.status(error.status || 500).json({
+        success: false,
+        message: error.message,
+      });
     }
   }
 }
-
-export const cartController = new CartController();

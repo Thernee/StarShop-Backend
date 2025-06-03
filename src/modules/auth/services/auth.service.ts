@@ -6,16 +6,71 @@ import { User } from '../../users/entities/user.entity';
 import { UserRole } from '../entities/user-role.entity';
 import { Role } from '../entities/role.entity';
 import AppDataSource from '../../../config/ormconfig';
+import { BadRequestError, UnauthorizedError } from '../../../utils/errors';
+import { compare, hash } from 'bcrypt';
+import { sign } from 'jsonwebtoken';
+import { config } from '../../../config';
 
 type RoleName = 'buyer' | 'seller' | 'admin';
 
 @Injectable()
 export class AuthService {
+  private userRepository = AppDataSource.getRepository(User);
+
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly roleService: RoleService
   ) {}
+
+  async register(data: {
+    email: string;
+    password: string;
+    name: string;
+    walletAddress: string;
+  }): Promise<{ user: User; token: string }> {
+    const existingUser = await this.userRepository.findOne({ where: { email: data.email } });
+    if (existingUser) {
+      throw new BadRequestError('Email already registered');
+    }
+
+    const hashedPassword = await hash(data.password, 10);
+    const user = this.userRepository.create({
+      ...data,
+      password: hashedPassword,
+      userRoles: [{ role: { name: 'buyer' as const } }],
+    });
+
+    await this.userRepository.save(user);
+
+    const token = sign({ id: user.id, email: user.email }, config.jwtSecret, { expiresIn: '24h' });
+
+    return { user, token };
+  }
+
+  async login(email: string, password: string): Promise<{ user: User; token: string }> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new UnauthorizedError('Invalid credentials');
+    }
+
+    const isPasswordValid = await compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedError('Invalid credentials');
+    }
+
+    const token = sign({ id: user.id, email: user.email }, config.jwtSecret, { expiresIn: '24h' });
+
+    return { user, token };
+  }
+
+  async getUserById(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: Number(id) } });
+    if (!user) {
+      throw new BadRequestError('User not found');
+    }
+    return user;
+  }
 
   async authenticateUser(walletAddress: string): Promise<{ access_token: string }> {
     // Get access to the User table in the database
@@ -74,7 +129,7 @@ export class AuthService {
   }
 
   async assignRole(userId: number, roleName: RoleName): Promise<User> {
-    const user = await this.userService.getUserById(userId);
+    const user = await this.userService.getUserById(String(userId));
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
@@ -98,11 +153,11 @@ export class AuthService {
     });
     await userRoleRepository.save(userRole);
 
-    return this.userService.getUserById(userId);
+    return this.userService.getUserById(String(userId));
   }
 
   async removeRole(userId: number): Promise<User> {
-    const user = await this.userService.getUserById(userId);
+    const user = await this.userService.getUserById(String(userId));
     if (!user) {
       throw new UnauthorizedException('User not found');
     }

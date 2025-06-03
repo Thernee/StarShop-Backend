@@ -1,34 +1,46 @@
-export class NotFoundError extends Error {
-  constructor(message: string) {
+export class AppError extends Error {
+  constructor(
+    public status: number,
+    message: string
+  ) {
     super(message);
-    this.name = 'NotFoundError';
+    this.name = this.constructor.name;
+    Error.captureStackTrace(this, this.constructor);
   }
 }
 
-export class BadRequestError extends Error {
+export class BadRequestError extends AppError {
   constructor(message: string) {
-    super(message);
-    this.name = 'BadRequestError';
+    super(400, message);
   }
 }
 
-export class ValidationError extends Error {
+export class UnauthorizedError extends AppError {
   constructor(message: string) {
-    super(message);
-    this.name = 'ValidationError';
+    super(401, message);
   }
 }
 
-export class UnauthorizedError extends Error {
+export class ForbiddenError extends AppError {
   constructor(message: string) {
-    super(message);
-    this.name = 'UnauthorizedError';
+    super(403, message);
   }
 }
 
-export class ForbiddenError extends Error {
+export class NotFoundError extends AppError {
   constructor(message: string) {
-    super(message);
-    this.name = 'ForbiddenError';
+    super(404, message);
+  }
+}
+
+export class ConflictError extends AppError {
+  constructor(message: string) {
+    super(409, message);
+  }
+}
+
+export class InternalServerError extends AppError {
+  constructor(message: string = 'Internal server error') {
+    super(500, message);
   }
 }

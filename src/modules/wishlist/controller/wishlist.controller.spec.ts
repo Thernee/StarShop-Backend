@@ -6,7 +6,7 @@ import { ConflictException } from '@nestjs/common';
 import { Wishlist } from '../entitities/wishlist.entity';
 import { mockRequest } from '../common/mock/mock-request';
 import { AuthRequest } from '../common/types/auth-request.type';
-import { Role } from '../../auth/entities/role.entity';
+import { Role } from '@/types/role';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Product } from '../../products/entities/product.entity';
 import { JwtService } from '@nestjs/jwt';
@@ -69,12 +69,11 @@ describe('WishlistController', () => {
     it('should call the service method to add product', async () => {
       const userId = 'user-id';
       const productId = 'product-id';
-      const mockRole = { id: 1, name: 'buyer' } as Role;
       const req = mockRequest({
         user: {
           id: userId,
           walletAddress: 'test-wallet',
-          role: [mockRole],
+          role: [Role.USER],
         },
       }) as unknown as AuthRequest;
 
@@ -87,12 +86,11 @@ describe('WishlistController', () => {
     it('should throw ConflictException when product is already in wishlist', async () => {
       const userId = 'user-id';
       const productId = 'product-id';
-      const mockRole = { id: 1, name: 'buyer' } as Role;
       const req = mockRequest({
         user: {
           id: userId,
           walletAddress: 'test-wallet',
-          role: [mockRole],
+          role: [Role.USER],
         },
       }) as unknown as AuthRequest;
 
@@ -108,12 +106,11 @@ describe('WishlistController', () => {
     it('should call service method to remove product from wishlist', async () => {
       const userId = 'user-id';
       const productId = 'product-id';
-      const mockRole = { id: 1, name: 'buyer' } as Role;
       const req = mockRequest({
         user: {
           id: userId,
           walletAddress: 'test-wallet',
-          role: [mockRole],
+          role: [Role.USER],
         },
       }) as unknown as AuthRequest;
 
@@ -127,12 +124,11 @@ describe('WishlistController', () => {
   describe('getWishlist', () => {
     it('should return the user wishlist', async () => {
       const userId = 'user-id';
-      const mockRole = { id: 1, name: 'buyer' } as Role;
       const req = mockRequest({
         user: {
           id: userId,
           walletAddress: 'test-wallet',
-          role: [mockRole],
+          role: [Role.USER],
         },
       }) as unknown as AuthRequest;
       const wishlistItems = [new Wishlist()];

@@ -56,6 +56,16 @@ describe('FileService', () => {
 
   describe('uploadFile', () => {
     it('should upload a file to Cloudinary and save its metadata', async () => {
+      const mockUser = {
+        id: 1,
+        walletAddress: '0x123',
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'hashed_password',
+        orders: [],
+        userRoles: [],
+      };
+
       const mockFile = {
         originalname: 'test.jpg',
         mimetype: 'image/jpeg',
@@ -73,8 +83,9 @@ describe('FileService', () => {
         size: mockFile.size,
         providerType: 'cloudinary',
         providerPublicId: mockFile.filename,
-        uploadedById: 1,
+        uploadedById: '1',
         uploadedAt: new Date(),
+        uploadedBy: mockUser,
       } as File;
 
       fileRepository.create.mockReturnValue(createdFile);
@@ -90,13 +101,23 @@ describe('FileService', () => {
         size: mockFile.size,
         providerType: 'cloudinary',
         providerPublicId: mockFile.filename,
-        uploadedById: 1,
+        uploadedById: '1',
       });
 
       expect(result).toEqual(createdFile);
     });
 
     it('should upload a file to S3 and save its metadata', async () => {
+      const mockUser = {
+        id: 1,
+        walletAddress: '0x123',
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'hashed_password',
+        orders: [],
+        userRoles: [],
+      };
+
       const mockFile = {
         originalname: 'document.pdf',
         mimetype: 'application/pdf',
@@ -114,8 +135,9 @@ describe('FileService', () => {
         size: mockFile.size,
         providerType: 's3',
         providerPublicId: mockFile.key!,
-        uploadedById: 1,
+        uploadedById: '1',
         uploadedAt: new Date(),
+        uploadedBy: mockUser,
       } as File;
 
       fileRepository.create.mockReturnValue(createdFile);
@@ -131,7 +153,7 @@ describe('FileService', () => {
         size: mockFile.size,
         providerType: 's3',
         providerPublicId: mockFile.key,
-        uploadedById: 1,
+        uploadedById: '1',
       });
 
       expect(result).toEqual(createdFile);
@@ -140,7 +162,29 @@ describe('FileService', () => {
 
   describe('getFileById', () => {
     it('should return the file if found', async () => {
-      const mockFile = { id: 'uuid', uploadedById: 1 } as File;
+      const mockUser = {
+        id: 1,
+        walletAddress: '0x123',
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'hashed_password',
+        orders: [],
+        userRoles: [],
+      };
+
+      const mockFile = {
+        id: 'uuid',
+        uploadedById: '1',
+        uploadedBy: mockUser,
+        url: 'https://example.com/test.jpg',
+        type: FileType.IMAGE,
+        filename: 'test.jpg',
+        mimetype: 'image/jpeg',
+        size: 1024,
+        providerType: 'cloudinary',
+        providerPublicId: 'public-id',
+        uploadedAt: new Date(),
+      } as unknown as File;
 
       fileRepository.findOne.mockResolvedValue(mockFile);
 
@@ -165,14 +209,51 @@ describe('FileService', () => {
 
   describe('getUserFiles', () => {
     it("should return user's files", async () => {
-      const mockFiles = [{ id: 'f1' }, { id: 'f2' }] as File[];
+      const mockUser = {
+        id: 1,
+        walletAddress: '0x123',
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'hashed_password',
+        orders: [],
+        userRoles: [],
+      };
+
+      const mockFiles = [
+        {
+          id: 'f1',
+          uploadedById: '1',
+          uploadedBy: mockUser,
+          url: 'https://example.com/test.jpg',
+          type: FileType.IMAGE,
+          filename: 'test.jpg',
+          mimetype: 'image/jpeg',
+          size: 1024,
+          providerType: 'cloudinary',
+          providerPublicId: 'public-id',
+          uploadedAt: new Date(),
+        },
+        {
+          id: 'f2',
+          uploadedById: '1',
+          uploadedBy: mockUser,
+          url: 'https://example.com/test.pdf',
+          type: FileType.DOCUMENT,
+          filename: 'test.pdf',
+          mimetype: 'application/pdf',
+          size: 2048,
+          providerType: 's3',
+          providerPublicId: 'public-id',
+          uploadedAt: new Date(),
+        },
+      ] as File[];
 
       fileRepository.find.mockResolvedValue(mockFiles);
 
       const result = await fileService.getUserFiles(1);
 
       expect(fileRepository.find).toHaveBeenCalledWith({
-        where: { uploadedById: 1 },
+        where: { uploadedById: '1' },
         order: { uploadedAt: 'DESC' },
       });
 
@@ -190,12 +271,29 @@ describe('FileService', () => {
 
   describe('deleteFile', () => {
     it('should delete a cloudinary file if owned by user', async () => {
+      const mockUser = {
+        id: 1,
+        walletAddress: '0x123',
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'hashed_password',
+        orders: [],
+        userRoles: [],
+      };
+
       const mockFile = {
         id: 'uuid',
         providerType: 'cloudinary',
-        providerPublicId: 'img-123',
-        uploadedById: 1,
-      } as File;
+        providerPublicId: 'public-id',
+        uploadedById: '1',
+        uploadedBy: mockUser,
+        url: 'https://example.com/test.jpg',
+        type: FileType.IMAGE,
+        filename: 'test.jpg',
+        mimetype: 'image/jpeg',
+        size: 1024,
+        uploadedAt: new Date(),
+      } as unknown as File;
 
       fileRepository.findOne.mockResolvedValue(mockFile);
       (cloudinary.uploader.destroy as jest.Mock).mockResolvedValue({ result: 'ok' });
@@ -203,18 +301,35 @@ describe('FileService', () => {
 
       const result = await fileService.deleteFile('uuid', 1);
 
-      expect(cloudinary.uploader.destroy).toHaveBeenCalledWith('img-123');
+      expect(cloudinary.uploader.destroy).toHaveBeenCalledWith('public-id');
       expect(fileRepository.remove).toHaveBeenCalledWith(mockFile);
       expect(result).toBe(true);
     });
 
     it('should delete an s3 file if owned by user', async () => {
+      const mockUser = {
+        id: 1,
+        walletAddress: '0x123',
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'hashed_password',
+        orders: [],
+        userRoles: [],
+      };
+
       const mockFile = {
         id: 'uuid',
         providerType: 's3',
-        providerPublicId: 'docs/doc.pdf',
-        uploadedById: 1,
-      } as File;
+        providerPublicId: 'public-id',
+        uploadedById: '1',
+        uploadedBy: mockUser,
+        url: 'https://example.com/test.pdf',
+        type: FileType.DOCUMENT,
+        filename: 'test.pdf',
+        mimetype: 'application/pdf',
+        size: 2048,
+        uploadedAt: new Date(),
+      } as unknown as File;
 
       fileRepository.findOne.mockResolvedValue(mockFile);
       fileRepository.remove.mockResolvedValue(mockFile);
@@ -224,7 +339,7 @@ describe('FileService', () => {
 
       expect(s3Client.send).toHaveBeenCalledWith(
         expect.objectContaining({
-          Key: 'docs/doc.pdf',
+          Key: 'public-id',
         })
       );
 

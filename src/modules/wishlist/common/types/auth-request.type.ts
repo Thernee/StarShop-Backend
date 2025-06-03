@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { Role } from '../../../auth/entities/role.entity';
+import { Role } from '../../../../types/role';
 
 export interface AuthRequest extends Request {
   user: {

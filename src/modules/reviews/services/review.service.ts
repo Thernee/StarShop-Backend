@@ -5,7 +5,6 @@ import { NotFoundError, BadRequestError } from '../../../utils/errors';
 import { ProductReviewsResponseDTO, ReviewResponseDTO } from '../dto/review.dto';
 import { ProductService } from '../../products/services/product.service';
 import { UserService } from '../../users/services/user.service';
-import { User } from '../../users/entities/user.entity';
 
 export class ReviewService {
   private repository: Repository<Review>;
@@ -15,7 +14,7 @@ export class ReviewService {
   constructor() {
     this.repository = AppDataSource.getRepository(Review);
     this.productService = new ProductService();
-    this.userService = new UserService(AppDataSource.getRepository(User));
+    this.userService = new UserService();
   }
 
   async createReview(
@@ -34,7 +33,7 @@ export class ReviewService {
     }
 
     try {
-      await this.userService.getUserById(userId);
+      await this.userService.getUserById(String(userId));
     } catch (error) {
       throw new NotFoundError(`User with ID ${userId} not found`);
     }

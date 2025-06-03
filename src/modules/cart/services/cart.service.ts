@@ -4,14 +4,18 @@ import { CartItem } from '../entities/cart-item.entity';
 import { CartResponseDto } from '../dtos/cart.dto';
 import AppDataSource from '../../../config/ormconfig';
 import { ProductVariant } from '../../productVariants/entities/productVariants.entity';
+import { Product } from '../../products/entities/product.entity';
+import { NotFoundError } from '../../../utils/errors';
 
 export class CartService {
   private cartRepository: Repository<Cart>;
   private cartItemRepository: Repository<CartItem>;
+  private productRepository: Repository<Product>;
 
   constructor() {
     this.cartRepository = AppDataSource.getRepository(Cart);
     this.cartItemRepository = AppDataSource.getRepository(CartItem);
+    this.productRepository = AppDataSource.getRepository(Product);
   }
 
   async getOrCreateCart(userId: string): Promise<Cart> {
@@ -63,6 +67,11 @@ export class CartService {
 
   async addItem(userId: string, productId: string, quantity: number): Promise<CartResponseDto> {
     const cart = await this.getOrCreateCart(userId);
+    const product = await this.productRepository.findOne({ where: { id: Number(productId) } });
+
+    if (!product) {
+      throw new NotFoundError('Product not found');
+    }
 
     let cartItem = await this.cartItemRepository.findOne({
       where: {
@@ -86,14 +95,37 @@ export class CartService {
     return this.getCart(userId);
   }
 
-  async removeItem(userId: string, productId: string): Promise<CartResponseDto> {
+  async updateItem(userId: string, itemId: string, quantity: number): Promise<CartResponseDto> {
     const cart = await this.getOrCreateCart(userId);
-
-    await this.cartItemRepository.delete({
-      cartId: cart.id,
-      productId: productId,
+    const cartItem = await this.cartItemRepository.findOne({
+      where: { id: itemId, cartId: cart.id },
     });
 
+    if (!cartItem) {
+      throw new NotFoundError('Cart item not found');
+    }
+
+    if (quantity <= 0) {
+      await this.cartItemRepository.remove(cartItem);
+    } else {
+      cartItem.quantity = quantity;
+      await this.cartItemRepository.save(cartItem);
+    }
+
+    return this.getCart(userId);
+  }
+
+  async removeItem(userId: string, itemId: string): Promise<CartResponseDto> {
+    const cart = await this.getOrCreateCart(userId);
+    const cartItem = await this.cartItemRepository.findOne({
+      where: { id: itemId, cartId: cart.id },
+    });
+
+    if (!cartItem) {
+      throw new NotFoundError('Cart item not found');
+    }
+
+    await this.cartItemRepository.remove(cartItem);
     return this.getCart(userId);
   }
 

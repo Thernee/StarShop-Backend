@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException } from '@nestjs/common';
 import AppDataSource from '../../../config/ormconfig';
 import { User } from '../../users/entities/user.entity';
+import { Role } from '../../../types/role';
 
 const jwtService = new JwtService({ secret: process.env.JWT_SECRET });
 const userRepository = AppDataSource.getRepository(User);
@@ -37,7 +38,7 @@ export const sessionMiddleware = async (req: Request, res: Response, next: NextF
     req.user = {
       id: user.id,
       walletAddress: user.walletAddress,
-      role: user.userRoles.map((ur) => ur.role.name),
+      role: user.userRoles.map((ur) => ur.role.name as Role),
     };
 
     next();
