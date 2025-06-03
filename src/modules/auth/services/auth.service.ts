@@ -7,7 +7,7 @@ import { UserRole } from '../entities/user-role.entity';
 import { Role } from '../entities/role.entity';
 import AppDataSource from '../../../config/ormconfig';
 import { BadRequestError, UnauthorizedError } from '../../../utils/errors';
-import { compare, hash } from 'bcrypt';
+import { compare, hash } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { config } from '../../../config';
 

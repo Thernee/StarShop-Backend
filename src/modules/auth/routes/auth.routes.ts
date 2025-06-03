@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { jwtAuthMiddleware } from '../middleware/jwt-auth.middleware';
-import { AuthController } from '../controllers/auth.controller.js';
+import { AuthController } from '../controllers/auth.controller';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../../users/services/user.service';
 import { RoleService } from '../services/role.service';
