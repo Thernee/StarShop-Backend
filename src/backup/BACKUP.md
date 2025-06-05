@@ -1,0 +1,1 @@
+## This conatains the backup of legacy bootstrap and routing, as part of the process of cleaning up the codebase off Express-style setup, adding a unified entry and implementing the use of NestFactory and consistent module registration via AppModule.
