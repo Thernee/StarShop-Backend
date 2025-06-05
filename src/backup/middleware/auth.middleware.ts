@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { AuthenticatedRequest } from '../types/auth-request.type';
-import { Role } from '../types/role';
+import { AuthenticatedRequest } from '../../types/auth-request.type';
+import { Role } from '../../types/role';
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   // Implementación del middleware

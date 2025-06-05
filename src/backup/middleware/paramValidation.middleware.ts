@@ -1,5 +1,5 @@
 import { param } from 'express-validator';
-import { validateRequest } from '../middleware/validateRequest.middleware';
+import { validateRequest } from './validateRequest.middleware';
 
 export const paramValidators = {
   isPositiveInt: param('id').isInt({ min: 1 }).toInt(),
