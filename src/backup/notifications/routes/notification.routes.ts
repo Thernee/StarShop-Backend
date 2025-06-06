@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { NotificationController } from '../controllers/notification.controller';
+import { NotificationController } from '../../../modules/notifications/controllers/notification.controller';
 import { validateRequest } from '../../middleware/validation.middleware';
-import { NotificationDto, UserNotificationDto } from '../dto/notification.dto';
-import { NotificationService } from '../services/notification.service';
+import { NotificationDto, UserNotificationDto } from '../../../modules/notifications/dto/notification.dto';
+import { NotificationService } from '../../../modules/notifications/services/notification.service';
 import { ConfigService } from '@nestjs/config';
-import { AuthenticatedRequest } from '../../shared/types/auth-request.type';
-import { jwtAuthMiddleware } from '../../auth/middleware/jwt-auth.middleware';
+import { AuthenticatedRequest } from '../../../modules/shared/types/auth-request.type';
+import { jwtAuthMiddleware } from '../../../modules/auth/middleware/jwt-auth.middleware';
 import { asyncHandler } from '../../middleware/async-handler';
 
 const router = Router();

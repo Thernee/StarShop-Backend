@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { jwtAuthMiddleware } from '../../auth/middleware/jwt-auth.middleware';
-import { ProductController } from '../controllers/product.controller';
-import { ProductService } from '../services/product.service';
+import { jwtAuthMiddleware } from '../../../modules/auth/middleware/jwt-auth.middleware';
+import { ProductController } from '../../../modules/products/controllers/product.controller';
+import { ProductService } from '../../../modules/products/services/product.service';
 
 const router = Router();
 const productService = new ProductService();

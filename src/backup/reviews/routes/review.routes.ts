@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { ReviewController } from '../controllers/review.controller';
-import { canReviewProduct, validateReviewData } from '../middlewares/review.middleware';
-import { jwtAuthMiddleware } from '../../auth/middleware/jwt-auth.middleware';
-import { AuthenticatedRequest } from '../../shared/types/auth-request.type';
+import { ReviewController } from '../../../modules/reviews/controllers/review.controller';
+import { canReviewProduct, validateReviewData } from '../../../modules/reviews/middlewares/review.middleware';
+import { jwtAuthMiddleware } from '../../../modules/auth/middleware/jwt-auth.middleware';
+import { AuthenticatedRequest } from '../../../modules/shared/types/auth-request.type';
 
 const router = Router();
 const reviewController = new ReviewController();

@@ -11,6 +11,7 @@ import { User } from '../../modules/users/entities/user.entity';
 import { RoleService } from './services/role.service';
 import { AuthService } from './services/auth.service';
 import { RoleController } from './controllers/role.controller';
+import { AuthController } from './controllers/auth.controller';
 
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
@@ -30,7 +31,7 @@ import { RolesGuard } from './guards/roles.guard';
       inject: [ConfigService],
     }),
   ],
-  controllers: [RoleController],
+  controllers: [RoleController, AuthController],
   providers: [AuthService, RoleService, JwtAuthGuard, RolesGuard],
   exports: [AuthService, RoleService, JwtAuthGuard, RolesGuard, JwtModule],
 })

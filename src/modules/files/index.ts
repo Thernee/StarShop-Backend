@@ -11,7 +11,7 @@ export { FileService } from './services/file.service';
 export { FileController } from './controllers/file.controller';
 
 // Export routes
-import fileRoutes from './routes/file.routes';
+import fileRoutes from '../../backup/files/routes/file.routes';
 export { fileRoutes };
 
 // Export middlewares

@@ -1,10 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { RoleController } from '../controllers/role.controller';
-import { RoleService } from '../services/role.service';
-import { jwtAuthMiddleware } from '../middleware/jwt-auth.middleware';
-import { authorizeRoles } from '../middleware/authorize-roles.middleware';
-import { Role } from '../entities/role.entity';
-import { UserRole } from '../entities/user-role.entity';
+import { RoleController } from '../../../modules/auth/controllers/role.controller';
+import { RoleService } from '../../../modules/auth/services/role.service';
+import { jwtAuthMiddleware } from '../../../modules/auth/middleware/jwt-auth.middleware';
+import { authorizeRoles } from '../../../modules/auth/middleware/authorize-roles.middleware';
+import { Role } from '../../../modules/auth/entities/role.entity';
+import { UserRole } from '../../../modules/auth/entities/user-role.entity';
 import AppDataSource from '../../../config/ormconfig';
 import { Role as RoleEnum } from '../../../types/role';
 

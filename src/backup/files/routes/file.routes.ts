@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { FileController } from '../controllers/file.controller';
-import { uploadFile, validateFileExists } from '../middlewares/file-upload.middleware';
-import { jwtAuthMiddleware } from '../../auth/middleware/jwt-auth.middleware';
+import { FileController } from '../../../modules/files/controllers/file.controller';
+import { uploadFile, validateFileExists } from '../../../modules/files/middlewares/file-upload.middleware';
+import { jwtAuthMiddleware } from '../../../modules/auth/middleware/jwt-auth.middleware';
 
 const router = Router();
 const fileController = new FileController();

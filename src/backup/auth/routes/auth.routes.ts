@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { jwtAuthMiddleware } from '../middleware/jwt-auth.middleware';
-import { AuthController } from '../controllers/auth.controller';
-import { AuthService } from '../services/auth.service';
-import { UserService } from '../../users/services/user.service';
-import { RoleService } from '../services/role.service';
+import { jwtAuthMiddleware } from '../../../modules/auth/middleware/jwt-auth.middleware';
+import { AuthController } from '../../../modules/auth/controllers/auth.controller';
+import { AuthService } from '../../../modules/auth/services/auth.service';
+import { UserService } from '../../../modules/users/services/user.service';
+import { RoleService } from '../../../modules/auth/services/role.service';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from '../entities/role.entity';
-import { UserRole } from '../entities/user-role.entity';
+import { Role } from '../../../modules/auth/entities/role.entity';
+import { UserRole } from '../../../modules/auth/entities/user-role.entity';
 import AppDataSource from '../../../config/ormconfig';
 
 const router = Router();

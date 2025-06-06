@@ -1,10 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { AuthRequest } from '../common/types/auth-request.type';
+import { AuthRequest } from '../../../modules/wishlist/common/types/auth-request.type';
 import AppDataSource from '../../../config/ormconfig';
-import { Wishlist } from '../entitities/wishlist.entity';
-import { Product } from '../../products/entities/product.entity';
-import { WishlistService } from '../service/wishlist.service';
-import { WishlistController } from '../controller/wishlist.controller';
+import { Wishlist } from '../../../modules/wishlist/entitities/wishlist.entity';
+import { Product } from '../../../modules/products/entities/product.entity';
+import { WishlistService } from '../../../modules/wishlist/service/wishlist.service';
+import { WishlistController } from '../../../modules/wishlist/controller/wishlist.controller';
 
 const router = Router();
 

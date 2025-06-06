@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { OrderController } from '../controllers/order.controller';
-import { OrderService } from '../services/order.service';
-import { jwtAuthMiddleware } from '../../auth/middleware/jwt-auth.middleware';
+import { OrderController } from '../../../modules/orders/controllers/order.controller';
+import { OrderService } from '../../../modules/orders/services/order.service';
+import { jwtAuthMiddleware } from '../../../modules/auth/middleware/jwt-auth.middleware';
 import AppDataSource from '../../../config/ormconfig';
-import { Order } from '../entities/order.entity';
-import { AuthenticatedRequest } from '../../shared/types/auth-request.type';
+import { Order } from '../../../modules/orders/entities/order.entity';
+import { AuthenticatedRequest } from '../../../modules/shared/types/auth-request.type';
 
 const router = Router();
 const orderService = new OrderService(AppDataSource.getRepository(Order));
