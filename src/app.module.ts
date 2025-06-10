@@ -6,7 +6,7 @@ import { ProductsModule } from './modules/products/products.module';
 import { ProductTypesModule } from './modules/productTypes/productTypes.module';
 import { ProductVariantsModule } from './modules/productVariants/productVariants.module';
 import { AttributeModule } from './modules/attributes/attributes.module';
-
+import { WishlistModule } from './modules/wishlist/wishlist.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -21,6 +21,7 @@ import { AttributeModule } from './modules/attributes/attributes.module';
     }),
     SharedModule,
     CouponModule,
+    WishlistModule,
     ProductsModule,
     ProductTypesModule,
     ProductVariantsModule,
